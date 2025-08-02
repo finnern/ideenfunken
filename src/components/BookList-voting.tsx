@@ -13,6 +13,7 @@ export default function BookListVoting({ user }: BookListVotingProps) {
   const [userVoteCount, setUserVoteCount] = useState(0)
   const [loadingVotes, setLoadingVotes] = useState(true)
   const [sortBy, setSortBy] = useState<'votes' | 'latest'>('votes')
+  const [expandedBookId, setExpandedBookId] = useState<string | null>(null)
 
   // Get user's current vote count
   useEffect(() => {
@@ -114,11 +115,15 @@ export default function BookListVoting({ user }: BookListVotingProps) {
     setUserVoteCount((prev: number) => increment ? prev + 1 : Math.max(0, prev - 1))
   }
 
+  const handleExpand = (bookId: string) => {
+    setExpandedBookId(expandedBookId === bookId ? null : bookId)
+  }
+
   if (loading || loadingVotes) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-        <span className="ml-2 text-gray-600">Loading books...</span>
+        <span className="ml-2 text-gray-600">Bücher werden geladen...</span>
       </div>
     )
   }
@@ -131,7 +136,7 @@ export default function BookListVoting({ user }: BookListVotingProps) {
           onClick={() => window.location.reload()}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
-          Retry
+          Erneut versuchen
         </button>
       </div>
     )
@@ -140,34 +145,40 @@ export default function BookListVoting({ user }: BookListVotingProps) {
   if (books.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600 mb-4">No books found.</p>
-        <p className="text-sm text-gray-500">Be the first to suggest a book!</p>
+        <p className="text-gray-600 mb-4">Keine Bücher gefunden.</p>
+        <p className="text-sm text-gray-500">Sei der erste, der ein Buch vorschlägt!</p>
       </div>
     )
   }
 
   return (
     <div>
+      {/* Main Header */}
+      <div className="mb-6 text-center">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Stimme für deine Lieblingsbücher!</h2>
+        <p className="text-gray-600">Die Top 10 Bücher kommen in die Mediathek</p>
+      </div>
+
       {/* Vote Counter */}
       <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-blue-800">Your Votes</h3>
-            <p className="text-sm text-blue-600">Click hearts to vote for books you want in the library</p>
+            <h3 className="font-semibold text-blue-800">Deine Stimmen</h3>
+            <p className="text-sm text-blue-600">Du hast 5 Stimmen insgesamt, maximal 1 Stimme pro Buch</p>
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-blue-800">
               {userVoteCount}/5
             </div>
             <div className="text-xs text-blue-600">
-              {5 - userVoteCount} remaining
+              {5 - userVoteCount} übrig
             </div>
           </div>
         </div>
         
         {userVoteCount >= 5 && (
           <div className="mt-2 p-2 bg-yellow-100 border border-yellow-300 rounded text-sm text-yellow-800">
-            🎯 You've used all 5 votes! Remove votes to vote for different books.
+            🎯 Du hast alle 5 Stimmen verwendet! Entferne Stimmen, um für andere Bücher zu stimmen.
           </div>
         )}
       </div>
@@ -176,7 +187,7 @@ export default function BookListVoting({ user }: BookListVotingProps) {
       <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center gap-2">
           <ArrowUpDown className="w-5 h-5 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Sort by: {sortBy}</span>
+          <span className="text-sm font-medium text-gray-700">Sortiert nach: {sortBy === 'votes' ? 'Stimmen' : 'Datum'}</span>
         </div>
         
         <div className="flex gap-2">
@@ -194,7 +205,7 @@ export default function BookListVoting({ user }: BookListVotingProps) {
             }`}
           >
             <TrendingUp className="w-4 h-4" />
-            Most Voted
+            Meiste Stimmen
           </button>
           
           <button
@@ -211,7 +222,7 @@ export default function BookListVoting({ user }: BookListVotingProps) {
             }`}
           >
             <Clock className="w-4 h-4" />
-            Latest Added
+            Zuletzt hinzugefügt
           </button>
         </div>
       </div>
@@ -219,7 +230,7 @@ export default function BookListVoting({ user }: BookListVotingProps) {
       {/* Sorting Status - Clean Display */}
       <div className="mb-4 text-center">
         <p className="text-sm text-gray-600">
-          Showing {sortedBooks.length} books sorted by {sortBy === 'votes' ? 'vote count' : 'date added'}
+          {sortedBooks.length} Bücher nach {sortBy === 'votes' ? 'Stimmen' : 'Datum'} sortiert
         </p>
       </div>
 
@@ -232,6 +243,8 @@ export default function BookListVoting({ user }: BookListVotingProps) {
             user={user}
             userVoteCount={userVoteCount}
             onVoteChange={handleVoteChange}
+            isExpanded={expandedBookId === book.id}
+            onExpand={() => handleExpand(book.id)}
           />
         ))}
       </div>

@@ -30,12 +30,25 @@ export function useBooks() {
         
         const { data: profiles, error: profilesError } = await supabase
           .from('profiles')
-          .select('id, email')
+          .select('id, first_name, last_name, email')
           .in('id', userIds)
 
         if (!profilesError && profiles) {
           profiles.forEach(profile => {
-            profilesMap.set(profile.id, profile.email?.split('@')[0] || null)
+            // Create full name from first_name + last_name, fallback to email username
+            let displayName = null
+            
+            if (profile.first_name && profile.last_name) {
+              displayName = `${profile.first_name} ${profile.last_name}`
+            } else if (profile.first_name) {
+              displayName = profile.first_name
+            } else if (profile.last_name) {
+              displayName = profile.last_name
+            } else if (profile.email) {
+              displayName = profile.email.split('@')[0]
+            }
+            
+            profilesMap.set(profile.id, displayName)
           })
         }
       }
