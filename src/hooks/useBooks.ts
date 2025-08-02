@@ -11,13 +11,42 @@ export function useBooks() {
       setLoading(true)
       setError(null)
 
-      const { data, error } = await supabase
+      // Query 1: Get all books (simple, reliable)
+      const { data: books, error: booksError } = await supabase
         .from('books')
         .select('*')
 
-      if (error) throw error
+      if (booksError) throw booksError
 
-      setBooks(data || [])
+      // Query 2: Get profile names for non-anonymous books that need names
+      const booksNeedingNames = (books || []).filter(book => 
+        !book.suggester_name && !book.is_anonymous && book.suggested_by
+      )
+
+      let profilesMap = new Map()
+      
+      if (booksNeedingNames.length > 0) {
+        const userIds = [...new Set(booksNeedingNames.map(book => book.suggested_by))]
+        
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, email')
+          .in('id', userIds)
+
+        if (!profilesError && profiles) {
+          profiles.forEach(profile => {
+            profilesMap.set(profile.id, profile.email?.split('@')[0] || null)
+          })
+        }
+      }
+
+      // Merge: Populate suggester_name from profiles
+      const booksWithNames = (books || []).map(book => ({
+        ...book,
+        suggester_name: book.suggester_name || profilesMap.get(book.suggested_by) || null
+      }))
+
+      setBooks(booksWithNames)
     } catch (err) {
       console.error('Error fetching books:', err)
       setError('Failed to load books')
