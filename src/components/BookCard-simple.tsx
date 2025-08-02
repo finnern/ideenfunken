@@ -40,7 +40,6 @@ export default function BookCard({ book, user, userVoteCount, onVoteChange, isEx
           setHasVoted(!!data && !error)
         }
       } catch (err) {
-        // No vote found is expected
         if (mounted) setHasVoted(false)
       } finally {
         if (mounted) setCheckingVote(false)
@@ -70,100 +69,54 @@ export default function BookCard({ book, user, userVoteCount, onVoteChange, isEx
 
         if (deleteError) throw deleteError
 
-        // Decrement book votes using SQL increment to prevent race conditions
-        console.log('🔽 DECREMENTING votes with SQL:', {
-          bookTitle: book.title,
-          bookId: book.id,
-          currentUIVotes: book.votes
-        })
-
-        // Direct database update - skip RPC for now
-        console.log('🔄 Starting direct database vote decrement...')
-
         const bookUpdateResult = await supabase.rpc('decrement_vote', { book_id: book.id })
 
         if (bookUpdateResult.data?.[0]?.new_votes !== undefined) {
           book.votes = bookUpdateResult.data[0].new_votes;
-          console.log('✅ Vote decremented - New count:', bookUpdateResult.data[0].new_votes)
         }
 
         if (bookUpdateResult.error) {
-          console.error('❌ CRITICAL: Vote decrement failed!', bookUpdateResult.error)
-          alert(`Database error: ${bookUpdateResult.error.message}`)
           throw bookUpdateResult.error
-        }
-
-        if (bookUpdateResult.data && bookUpdateResult.data.length > 0) {
-          console.log('✅ Vote decremented successfully! New vote count:', bookUpdateResult.data[0].votes)
-        } else {
-          console.warn('⚠️ No data returned from update - this is suspicious!')
         }
 
         setHasVoted(false)
         setVoteCount((prev: number) => Math.max(0, prev - 1))
         onVoteChange(book.id, false)
 
-        // No refresh needed - RPC functions return updated data
-
       } else {
         // Check vote limit
         if (userVoteCount >= 5) {
-          console.warn('User has reached maximum vote limit')
           return
         }
 
-        // Add vote with error handling for duplicates
+        // Add vote
         const { error: insertError } = await supabase
           .from('book_votes')
           .insert([{ book_id: book.id, user_id: user.id }])
 
         if (insertError) {
-          // Handle duplicate vote error gracefully
-          if (insertError.code === '23505') { // Unique constraint violation
-            console.warn('User already voted for this book')
-            setHasVoted(true) // Update local state
+          if (insertError.code === '23505') {
+            setHasVoted(true)
             return
           }
           throw insertError
         }
 
-        // Increment book votes using SQL increment to prevent race conditions
-        console.log('🔺 INCREMENTING votes with SQL:', {
-          bookTitle: book.title,
-          bookId: book.id,
-          currentUIVotes: book.votes
-        })
-
-        // Direct database update - skip RPC for now
-        console.log('🔄 Starting direct database vote increment...')
-
         const bookUpdateResult = await supabase.rpc('increment_vote', { book_id: book.id })
         if (bookUpdateResult.data?.[0]?.new_votes !== undefined) {
           book.votes = bookUpdateResult.data[0].new_votes;
-          console.log('✅ Vote incremented - New count:', bookUpdateResult.data[0].new_votes)
         }
 
         if (bookUpdateResult.error) {
-          console.error('❌ CRITICAL: Vote increment failed!', bookUpdateResult.error)
-          alert(`Database error: ${bookUpdateResult.error.message}`)
           throw bookUpdateResult.error
-        }
-
-        if (bookUpdateResult.data && bookUpdateResult.data.length > 0) {
-          console.log('✅ Vote incremented successfully! New vote count:', bookUpdateResult.data[0].votes)
-        } else {
-          console.warn('⚠️ No data returned from update - this is suspicious!')
         }
 
         setHasVoted(true)
         setVoteCount((prev: number) => prev + 1)
         onVoteChange(book.id, true)
-
-        // No refresh needed - RPC functions return updated data
       }
     } catch (error) {
       console.error('Error voting:', error)
-      alert('Failed to vote. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -193,101 +146,102 @@ Vielen Dank und beste Grüße`
 
   return (
     <div 
-      className={`rounded-lg shadow-md overflow-hidden border transition-all duration-300 ease-in-out cursor-pointer ${
+      className={`rounded border transition-all duration-300 cursor-pointer ${
         isExpanded 
-          ? 'bg-blue-50 border-blue-300 shadow-lg' 
-          : 'bg-white border-gray-200 hover:shadow-lg hover:border-blue-300'
+          ? 'bg-yellow-50 border-yellow-300 shadow-md' 
+          : 'bg-white border-gray-200 hover:border-yellow-300'
       }`}
       onClick={handleCardClick}
+      style={{ maxHeight: isExpanded ? 'none' : '200px' }}
     >
-      <div className="aspect-[2/3] w-1/3 mx-auto">
+      {/* Compact Cover - 80x120px */}
+      <div className="w-20 h-28 mx-auto pt-2">
         <BookCover
           coverUrl={book.cover_url || book.original_cover_url}
           title={book.title}
           author={book.author}
-          className="w-full h-full"
+          className="w-full h-full object-cover rounded-sm"
         />
       </div>
 
-      <div className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <div className="flex-1">
-            <h3 className="font-semibold text-lg mb-1 line-clamp-2">{book.title}</h3>
-            <p className="text-gray-600">{book.author}</p>
-          </div>
+      {/* Compact Content */}
+      <div className="p-2">
+        {/* Title & Author - Minimal */}
+        <div className="mb-2">
+          <h3 className="text-xs font-semibold line-clamp-2 leading-tight mb-1">{book.title}</h3>
+          <p className="text-xs text-gray-600 line-clamp-1">{book.author}</p>
+          
+          {/* Expand Indicator */}
           {(book.description || book.inspiration_quote) && (
-            <div className="ml-2 text-blue-500">
+            <div className="text-center mt-1">
               {isExpanded ? (
-                <ChevronUp className="w-5 h-5" />
+                <ChevronUp className="w-3 h-3 mx-auto text-yellow-600" />
               ) : (
-                <ChevronDown className="w-5 h-5" />
+                <ChevronDown className="w-3 h-3 mx-auto text-yellow-600" />
               )}
             </div>
           )}
         </div>
 
-        <div className="transition-all duration-300 ease-in-out">
-          {book.description && (
-            <p className={`text-sm text-gray-700 mb-3 transition-all duration-300 ${isExpanded ? '' : 'line-clamp-2'}`}>
-              {book.description}
-            </p>
-          )}
+        {/* Expanded Content */}
+        {isExpanded && (
+          <div className="border-t border-gray-200 pt-2 mt-2">
+            {book.description && (
+              <p className="text-xs text-gray-700 mb-2 line-clamp-3">{book.description}</p>
+            )}
 
-          {book.suggester_name && (
-            <div className="mb-3 p-2 bg-blue-50 rounded border-l-4 border-blue-200 transition-all duration-300">
-              <p className="font-bold text-blue-900 mb-1" style={{fontSize: '1.1rem'}}>
-                Empfohlen von: {book.suggester_name}
-              </p>
-              {book.inspiration_quote && (
-                <p className={`text-sm text-blue-700 italic transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'}`}>
-                  "{book.inspiration_quote}"
+            {book.suggester_name && (
+              <div className="mb-2 p-2 bg-yellow-50 rounded text-xs">
+                <p className="font-medium text-yellow-800 mb-1">
+                  Empfohlen von: {book.suggester_name}
                 </p>
-              )}
-            </div>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-500">
-            {voteCount} {voteCount !== 1 ? 'Stimmen' : 'Stimme'}
+                {book.inspiration_quote && (
+                  <p className="text-yellow-700 italic line-clamp-2">
+                    "{book.inspiration_quote}"
+                  </p>
+                )}
+              </div>
+            )}
           </div>
+        )}
 
-          <div className="flex items-center gap-2">
+        {/* Action Bar */}
+        <div className="flex items-center justify-between mt-2">
+          {/* Vote Count */}
+          <span className="text-xs text-gray-500">{voteCount}</span>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1">
             {/* Email Button */}
             <a
               data-email-button
               href={generateEmailLink()}
-              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-green-500 text-white hover:bg-green-600 transition-colors"
-              title="Buch per Email bestellen"
+              className="p-1 text-green-600 hover:text-green-700"
+              title="Email bestellen"
             >
               <Mail className="w-3 h-3" />
-              <span>Email</span>
             </a>
 
             {/* Vote Button */}
-            {user ? (
+            {user && (
               <button
                 data-vote-button
                 onClick={handleVote}
                 disabled={loading || checkingVote || (!hasVoted && userVoteCount >= 5)}
-                className={`flex items-center gap-2 px-3 py-1 rounded text-sm transition-colors ${hasVoted
-                    ? 'bg-red-500 text-white hover:bg-red-600'
+                className={`p-1 rounded transition-colors ${hasVoted
+                    ? 'text-red-500 hover:text-red-600'
                     : userVoteCount >= 5
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-yellow-500 hover:text-yellow-600'
                   }`}
+                title={hasVoted ? 'Stimme entfernen' : 'Stimmen'}
               >
                 {loading || checkingVote ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
                 ) : (
                   <Heart className={`w-3 h-3 ${hasVoted ? 'fill-current' : ''}`} />
                 )}
-                <span className="text-xs">
-                  {loading || checkingVote ? '...' : hasVoted ? 'Entfernen' : 'Stimmen'}
-                </span>
               </button>
-            ) : (
-              <span className="text-xs text-gray-400">Anmelden zum Stimmen</span>
             )}
           </div>
         </div>
