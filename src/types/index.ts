@@ -10,6 +10,11 @@ export interface Book {
   updated_at: string
   isbn: string | null
   suggested_by: string | null
+  inspiration_quote?: string | null
+  suggester_name?: string | null
+  is_anonymous?: boolean
+  more_info_url?: string | null
+  url_good_reads?: string | null
 }
 
 export interface BookVote {

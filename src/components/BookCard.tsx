@@ -1,4 +1,4 @@
-import { Book } from '../types/index'
+import type { Book } from '../types/index'
 import BookCover from './BookCover'
 import SimplifiedVoteButton from './SimplifiedVoteButton'
 import { useState } from 'react'

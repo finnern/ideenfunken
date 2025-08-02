@@ -3,11 +3,13 @@ import { Toaster } from 'sonner'
 import { supabase } from './lib/supabase'
 import Auth from './components/Auth'
 import BookListVoting from './components/BookList-voting'
+import BookSearchFixed from './components/BookSearch-fixed'
 
 function App() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [bookCount, setBookCount] = useState<number | null>(null)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   useEffect(() => {
     // Test database connection
@@ -108,6 +110,19 @@ function App() {
           )}
         </div>
 
+        {/* Book Search - Add New Books */}
+        {user && (
+          <div className="mb-8">
+            <BookSearchFixed 
+              user={user} 
+              onBookAdded={() => {
+                // Refresh the book list when a new book is added
+                setRefreshKey(prev => prev + 1)
+              }} 
+            />
+          </div>
+        )}
+
         {/* Book Voting Interface */}
         {user && (
           <div className="bg-white p-6 rounded shadow">
@@ -116,7 +131,7 @@ function App() {
               Vote for your favorite books! You have 5 votes total, maximum 1 vote per book.
               The top 10 books will be added to the local library.
             </p>
-            <BookListVoting user={user} />
+            <BookListVoting key={refreshKey} user={user} />
           </div>
         )}
       </div>

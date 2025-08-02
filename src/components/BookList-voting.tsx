@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useBooks } from '../hooks/useBooks'
 import BookCard from './BookCard-simple'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ArrowUpDown, TrendingUp, Clock } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 interface BookListVotingProps {
@@ -12,35 +12,106 @@ export default function BookListVoting({ user }: BookListVotingProps) {
   const { books, loading, error } = useBooks()
   const [userVoteCount, setUserVoteCount] = useState(0)
   const [loadingVotes, setLoadingVotes] = useState(true)
+  const [sortBy, setSortBy] = useState<'votes' | 'latest'>('votes')
 
   // Get user's current vote count
   useEffect(() => {
+    let mounted = true
+
     const getUserVoteCount = async () => {
       if (!user) {
-        setLoadingVotes(false)
+        if (mounted) setLoadingVotes(false)
         return
       }
 
       try {
-        const { count } = await supabase
+        const { count, error } = await supabase
           .from('book_votes')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', user.id)
 
-        setUserVoteCount(count || 0)
+        if (mounted) {
+          setUserVoteCount(error ? 0 : (count || 0))
+        }
       } catch (err) {
         console.error('Error getting vote count:', err)
-        setUserVoteCount(0)
+        if (mounted) setUserVoteCount(0)
       } finally {
-        setLoadingVotes(false)
+        if (mounted) setLoadingVotes(false)
       }
     }
 
     getUserVoteCount()
+
+    return () => {
+      mounted = false
+    }
   }, [user])
 
-  const handleVoteChange = (bookId: string, increment: boolean) => {
-    setUserVoteCount(prev => increment ? prev + 1 : Math.max(0, prev - 1))
+  // Force re-render when sortBy changes
+  const [sortKey, setSortKey] = useState(0)
+  
+  // Sort books with explicit dependency tracking
+  const sortedBooks = useMemo(() => {
+    console.log('🔄 FORCED Sorting triggered', { 
+      sortBy, 
+      sortKey,
+      booksLength: books.length,
+      timestamp: new Date().toISOString()
+    })
+    
+    if (!books.length) {
+      console.log('❌ No books to sort')
+      return []
+    }
+
+    console.log('📚 Raw books before sorting:', books.slice(0, 3).map(b => ({
+      title: b.title,
+      votes: b.votes,
+      created_at: b.created_at
+    })))
+
+    const sorted = [...books].sort((a, b) => {
+      if (sortBy === 'votes') {
+        console.log('📊 VOTE COMPARISON:', {
+          bookA: `${a.title}: ${a.votes} votes (${typeof a.votes})`,
+          bookB: `${b.title}: ${b.votes} votes (${typeof b.votes})`,
+          voteDiff: b.votes - a.votes,
+          result: b.votes !== a.votes ? (b.votes - a.votes) : 'tie-breaker by date'
+        })
+        // Sort by votes (descending), then by created_at (descending) for ties
+        if (b.votes !== a.votes) {
+          return b.votes - a.votes
+        }
+        const dateResult = new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        console.log('📅 DATE TIE-BREAKER:', {
+          bookA: `${a.title}: ${a.created_at}`,
+          bookB: `${b.title}: ${b.created_at}`,
+          result: dateResult
+        })
+        return dateResult
+      } else {
+        const dateResult = new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        console.log('📅 DATE COMPARISON:', {
+          bookA: `${a.title}: ${a.created_at}`,
+          bookB: `${b.title}: ${b.created_at}`,
+          result: dateResult
+        })
+        return dateResult
+      }
+    })
+
+    console.log('✅ Sorted books result:', sorted.slice(0, 3).map(b => ({
+      title: b.title,
+      votes: b.votes,
+      created_at: b.created_at
+    })))
+    
+    return sorted
+  }, [books, sortBy, sortKey])
+
+  const handleVoteChange = (_bookId: string, increment: boolean) => {
+    setUserVoteCount((prev: number) => increment ? prev + 1 : Math.max(0, prev - 1))
   }
 
   if (loading || loadingVotes) {
@@ -101,9 +172,60 @@ export default function BookListVoting({ user }: BookListVotingProps) {
         )}
       </div>
 
+      {/* Sorting Controls */}
+      <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-2">
+          <ArrowUpDown className="w-5 h-5 text-gray-500" />
+          <span className="text-sm font-medium text-gray-700">Sort by: {sortBy}</span>
+        </div>
+        
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              console.log('Clicked Most Voted, current sortBy:', sortBy)
+              setSortBy('votes')
+              setSortKey(prev => prev + 1)
+              console.log('Set sortBy to: votes, sortKey incremented')
+            }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              sortBy === 'votes'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <TrendingUp className="w-4 h-4" />
+            Most Voted
+          </button>
+          
+          <button
+            onClick={() => {
+              console.log('Clicked Latest Added, current sortBy:', sortBy)
+              setSortBy('latest')
+              setSortKey(prev => prev + 1)
+              console.log('Set sortBy to: latest, sortKey incremented')
+            }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              sortBy === 'latest'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            Latest Added
+          </button>
+        </div>
+      </div>
+
+      {/* Sorting Status - Clean Display */}
+      <div className="mb-4 text-center">
+        <p className="text-sm text-gray-600">
+          Showing {sortedBooks.length} books sorted by {sortBy === 'votes' ? 'vote count' : 'date added'}
+        </p>
+      </div>
+
       {/* Books Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {books.map((book) => (
+        {sortedBooks.map((book) => (
           <BookCard 
             key={book.id} 
             book={book} 
