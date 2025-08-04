@@ -146,102 +146,103 @@ Vielen Dank und beste Grüße`
 
   return (
     <div 
-      className={`rounded border transition-all duration-300 cursor-pointer ${
+      className={`rounded-lg shadow-md overflow-hidden border transition-all duration-300 ease-in-out cursor-pointer ${
         isExpanded 
-          ? 'bg-yellow-50 border-yellow-300 shadow-md' 
-          : 'bg-white border-gray-200 hover:border-yellow-300'
+          ? 'bg-yellow-50 border-yellow-300 shadow-lg' 
+          : 'bg-white border-gray-200 hover:shadow-lg hover:border-yellow-300'
       }`}
       onClick={handleCardClick}
-      style={{ maxHeight: isExpanded ? 'none' : '200px' }}
     >
-      {/* Compact Cover - 80x120px */}
-      <div className="w-20 h-28 mx-auto pt-2">
+      {/* Book Cover - Better aspect ratio */}
+      <div className="aspect-[2/3] w-1/3 mx-auto">
         <BookCover
           coverUrl={book.cover_url || book.original_cover_url}
           title={book.title}
           author={book.author}
-          className="w-full h-full object-cover rounded-sm"
+          className="w-full h-full object-cover"
         />
       </div>
 
-      {/* Compact Content */}
-      <div className="p-2">
-        {/* Title & Author - Minimal */}
-        <div className="mb-2">
-          <h3 className="text-xs font-semibold line-clamp-2 leading-tight mb-1">{book.title}</h3>
-          <p className="text-xs text-gray-600 line-clamp-1">{book.author}</p>
-          
-          {/* Expand Indicator */}
+      {/* Content */}
+      <div className="p-4">
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex-1">
+            <h3 className="font-semibold text-lg mb-1 line-clamp-2">{book.title}</h3>
+            <p className="text-gray-600">{book.author}</p>
+          </div>
           {(book.description || book.inspiration_quote) && (
-            <div className="text-center mt-1">
+            <div className="ml-2 text-yellow-500">
               {isExpanded ? (
-                <ChevronUp className="w-3 h-3 mx-auto text-yellow-600" />
+                <ChevronUp className="w-5 h-5" />
               ) : (
-                <ChevronDown className="w-3 h-3 mx-auto text-yellow-600" />
+                <ChevronDown className="w-5 h-5" />
               )}
             </div>
           )}
         </div>
 
-        {/* Expanded Content */}
-        {isExpanded && (
-          <div className="border-t border-gray-200 pt-2 mt-2">
-            {book.description && (
-              <p className="text-xs text-gray-700 mb-2 line-clamp-3">{book.description}</p>
-            )}
+        <div className="transition-all duration-300 ease-in-out">
+          {book.description && (
+            <p className={`text-sm text-gray-700 mb-3 transition-all duration-300 ${isExpanded ? '' : 'line-clamp-2'}`}>
+              {book.description}
+            </p>
+          )}
 
-            {book.suggester_name && (
-              <div className="mb-2 p-2 bg-yellow-50 rounded text-xs">
-                <p className="font-medium text-yellow-800 mb-1">
-                  Empfohlen von: {book.suggester_name}
+          {book.suggester_name && (
+            <div className="mb-3 p-2 bg-yellow-50 rounded border-l-4 border-yellow-200 transition-all duration-300">
+              <p className="font-bold text-yellow-900 mb-1" style={{fontSize: '1.1rem'}}>
+                Empfohlen von: {book.suggester_name}
+              </p>
+              {book.inspiration_quote && (
+                <p className={`text-sm text-yellow-700 italic transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'}`}>
+                  "{book.inspiration_quote}"
                 </p>
-                {book.inspiration_quote && (
-                  <p className="text-yellow-700 italic line-clamp-2">
-                    "{book.inspiration_quote}"
-                  </p>
-                )}
-              </div>
-            )}
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-500">
+            {voteCount} {voteCount !== 1 ? 'Stimmen' : 'Stimme'}
           </div>
-        )}
 
-        {/* Action Bar */}
-        <div className="flex items-center justify-between mt-2">
-          {/* Vote Count */}
-          <span className="text-xs text-gray-500">{voteCount}</span>
-
-          {/* Action Buttons */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             {/* Email Button */}
             <a
               data-email-button
               href={generateEmailLink()}
-              className="p-1 text-green-600 hover:text-green-700"
-              title="Email bestellen"
+              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-green-500 text-white hover:bg-green-600 transition-colors"
+              title="Buch per Email bestellen"
             >
               <Mail className="w-3 h-3" />
+              <span>Email</span>
             </a>
 
             {/* Vote Button */}
-            {user && (
+            {user ? (
               <button
                 data-vote-button
                 onClick={handleVote}
                 disabled={loading || checkingVote || (!hasVoted && userVoteCount >= 5)}
-                className={`p-1 rounded transition-colors ${hasVoted
-                    ? 'text-red-500 hover:text-red-600'
+                className={`flex items-center gap-2 px-3 py-1 rounded text-sm transition-colors ${hasVoted
+                    ? 'bg-red-500 text-white hover:bg-red-600'
                     : userVoteCount >= 5
-                      ? 'text-gray-400 cursor-not-allowed'
-                      : 'text-yellow-500 hover:text-yellow-600'
+                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                      : 'bg-yellow-500 text-white hover:bg-yellow-600'
                   }`}
-                title={hasVoted ? 'Stimme entfernen' : 'Stimmen'}
               >
                 {loading || checkingVote ? (
                   <Loader2 className="w-3 h-3 animate-spin" />
                 ) : (
                   <Heart className={`w-3 h-3 ${hasVoted ? 'fill-current' : ''}`} />
                 )}
+                <span className="text-xs">
+                  {loading || checkingVote ? '...' : hasVoted ? 'Entfernen' : 'Stimmen'}
+                </span>
               </button>
+            ) : (
+              <span className="text-xs text-gray-400">Anmelden zum Stimmen</span>
             )}
           </div>
         </div>
