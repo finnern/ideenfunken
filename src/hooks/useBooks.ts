@@ -8,6 +8,7 @@ export function useBooks() {
 
   const fetchBooks = async () => {
     try {
+      console.log('📚 Fetching books...')
       setLoading(true)
       setError(null)
 
@@ -15,6 +16,8 @@ export function useBooks() {
       const { data: books, error: booksError } = await supabase
         .from('books')
         .select('*')
+
+      console.log('📚 Books query result:', { books: books?.length || 0, error: booksError })
 
       if (booksError) throw booksError
 

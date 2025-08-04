@@ -37,13 +37,17 @@ function App() {
   const [sortBy, setSortBy] = useState<'votes' | 'latest'>('votes')
 
   useEffect(() => {
+    console.log('🔍 Initializing auth...')
+    
     // Check authentication
     const checkAuth = async () => {
       try {
+        console.log('🔍 Checking existing session...')
         const { data: { session } } = await supabase.auth.getSession()
+        console.log('🔍 Session found:', !!session?.user)
         setUser(session?.user ?? null)
       } catch (err) {
-        console.error('Auth error:', err)
+        console.error('❌ Auth error:', err)
         setUser(null)
       } finally {
         setLoading(false)
@@ -51,7 +55,8 @@ function App() {
     }
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔍 Auth state changed:', event, !!session?.user)
       setUser(session?.user ?? null)
       setLoading(false)
     })
