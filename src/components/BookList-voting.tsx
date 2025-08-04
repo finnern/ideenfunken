@@ -155,7 +155,7 @@ export default function BookListVoting({ user }: BookListVotingProps) {
     <div>
       {/* Main Header */}
       <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Stimme für deine Lieblingsbücher!</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Vorgeschlagene Bücher mit Begründungen</h2>
         <p className="text-gray-600">Die Top 10 Bücher kommen in die Mediathek</p>
       </div>
 
