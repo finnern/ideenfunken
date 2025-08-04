@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Search, Plus, Loader2, BookOpen } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '../lib/supabase'
-import { searchBooks, extractIsbn, GoogleBook } from '../services/googleBooksService'
+import { searchBooks, extractIsbn, type GoogleBook } from '../services/googleBooksService'
 import BookCover from './BookCover'
 
 interface BookSearchProps {
@@ -187,7 +187,7 @@ export default function BookSearch({ user, onBookAdded }: BookSearchProps) {
                 <div className="flex gap-4">
                   <div className="w-16 h-24 flex-shrink-0">
                     <BookCover
-                      coverUrl={book.volumeInfo.imageLinks?.thumbnail?.replace('http:', 'https:')}
+                      coverUrl={book.volumeInfo.imageLinks?.thumbnail?.replace('http:', 'https:') || null}
                       title={book.volumeInfo.title}
                       author={book.volumeInfo.authors?.[0] || 'Unknown'}
                       className="w-full h-full rounded"

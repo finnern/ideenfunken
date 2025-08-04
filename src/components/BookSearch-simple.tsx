@@ -6,7 +6,7 @@ interface BookSearchProps {
   onBookAdded?: () => void
 }
 
-export default function BookSearchSimple({ user, onBookAdded }: BookSearchProps) {
+export default function BookSearchSimple({ }: BookSearchProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
   return (
