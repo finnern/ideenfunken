@@ -6,6 +6,28 @@ import Auth from './components/Auth'
 import BookListVoting from './components/BookList-voting'
 import BookSearchFixed from './components/BookSearch-fixed'
 
+// Logo component with fallback - responsive sizing for prominence
+const LogoWithFallback = ({ src, alt, fallbackText }: { src: string, alt: string, fallbackText: string }) => {
+  const [imageError, setImageError] = useState(false)
+  
+  if (imageError) {
+    return (
+      <div className="h-8 md:h-10 flex items-center px-2 md:px-3 bg-white bg-opacity-20 rounded text-xs md:text-sm font-medium">
+        {fallbackText}
+      </div>
+    )
+  }
+  
+  return (
+    <img 
+      src={src}
+      alt={alt}
+      className="h-8 md:h-10 object-contain opacity-90 bg-white rounded px-1"
+      onError={() => setImageError(true)}
+    />
+  )
+}
+
 function App() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -69,16 +91,39 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Compact Yellow Header - 3 Lines (~80px max) */}
-      <header className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black px-4 py-1" style={{maxHeight: '80px'}}>
+      {/* Professional Header with Sponsor Logos */}
+      <header className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black px-4 py-2">
         <div className="max-w-7xl mx-auto">
-          {/* Line 1: Brand */}
-          <div className="text-center mb-0.5">
-            <h1 className="text-lg font-bold">Ideenfunken | Schrambergs kreative Lesewelt</h1>
+          {/* Main Header Row with Logos and Title */}
+          <div className="flex items-center justify-between mb-1 gap-2 md:gap-4">
+            {/* Left Logo - KI Impact Group */}
+            <div className="flex-shrink-0">
+              <LogoWithFallback 
+                src="/assets/images/KI-Impact-Group-Logo.png"
+                alt="KI Impact Group"
+                fallbackText="KI Impact"
+              />
+            </div>
+            
+            {/* Center - Main Title */}
+            <div className="flex-1 text-center px-2">
+              <h1 className="text-lg md:text-2xl font-bold leading-tight">
+                IDEENFUNKEN | SCHRAMBERGS KREATIVE LESEWELT
+              </h1>
+            </div>
+            
+            {/* Right Logo - Make it in Schramberg */}
+            <div className="flex-shrink-0">
+              <LogoWithFallback 
+                src="/assets/images/make-it-in-schramberg-logo.png"
+                alt="Make it in Schramberg"
+                fallbackText="Make it in Schramberg"
+              />
+            </div>
           </div>
           
-          {/* Line 2: Controls */}
-          <div className="flex items-center justify-center gap-4 mb-1 text-xs">
+          {/* Controls Row */}
+          <div className="flex items-center justify-center gap-4 text-xs">
             {user ? (
               <>
                 <span className="font-medium">{userVoteCount}/5 Stimmen</span>
@@ -97,40 +142,42 @@ function App() {
               </div>
             )}
           </div>
-          
-          {/* Line 3: Logos */}
-          <div className="flex items-center justify-center gap-4">
-            <img 
-              src="/src/assets/images/make-it-in-schramberg-logo.jpg" 
-              alt="Make it in Schramberg" 
-              className="h-5 object-contain"
-            />
-            <img 
-              src="/src/assets/images/KI-Impact-Group-Logo.png" 
-              alt="KI Impact Group" 
-              className="h-5 object-contain"
-            />
-          </div>
         </div>
       </header>
+
+      {/* Welcome Invitation Text */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 py-3 text-center">
+          <p className="text-gray-700 text-sm md:text-base font-medium">
+            Eine Einladung an Schramberg und Umgebung: Teilt innovative Bücher, die euer Leben verbessert haben!
+          </p>
+        </div>
+      </div>
 
       {/* Collapsible Book Suggestion Banner */}
       {user && (
         <div className="bg-yellow-100 border-b border-yellow-200">
           <div className="max-w-7xl mx-auto px-4">
             {/* Compact Banner */}
-            <button
-              onClick={() => setShowBookSuggestion(!showBookSuggestion)}
-              className="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-gray-800 hover:text-gray-900 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Kreative Bücher vorschlagen</span>
-              {showBookSuggestion ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </button>
+            <div className="text-center">
+              <button
+                onClick={() => setShowBookSuggestion(!showBookSuggestion)}
+                className="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-gray-800 hover:text-gray-900 transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Kreative Bücher vorschlagen</span>
+                {showBookSuggestion ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+              
+              {/* Explanation Text */}
+              <p className="text-xs text-gray-600 pb-2 px-4">
+                Warum wir das machen: Gemeinsam entdecken wir Bücher, die inspirieren und neue Perspektiven eröffnen
+              </p>
+            </div>
 
             {/* Expandable Form */}
             {showBookSuggestion && (
@@ -160,6 +207,17 @@ function App() {
           <Auth onAuthSuccess={() => console.log('Auth success!')} />
         </div>
       )}
+
+      {/* Thanks/Credits Section */}
+      <footer className="bg-gray-100 border-t border-gray-200 mt-8">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="text-center">
+            <p className="text-sm text-gray-600 leading-relaxed">
+              Herzlichen Dank an <strong>Tobias Hilgert</strong> und die <strong>Mediathek</strong> sowie die <strong>Stadt Schramberg</strong> fürs Mitmachen und die Unterstützung dieser Initiative!
+            </p>
+          </div>
+        </div>
+      </footer>
       
       <Toaster 
         position="top-right"
