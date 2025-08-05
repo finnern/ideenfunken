@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Toaster } from 'sonner'
 import { supabase } from './lib/supabase'
 import { Plus, ChevronDown, ChevronUp, TrendingUp, Clock } from 'lucide-react'
-import Auth from './components/Auth'
+import LoginButton from './components/LoginButton'
 import BookListVoting from './components/BookList-voting'
 import BookSearchFixed from './components/BookSearch-fixed'
 
@@ -144,7 +144,7 @@ function App() {
             ) : (
               <div className="flex items-center gap-2">
                 <span>Anmelden zum Abstimmen und Vorschlagen:</span>
-                <Auth onAuthSuccess={() => console.log('Auth success!')} />
+                <LoginButton onAuthSuccess={() => console.log('Auth success!')} />
               </div>
             )}
           </div>
@@ -237,7 +237,7 @@ function App() {
             <p className="text-center text-blue-800">
               <strong>Hinweis:</strong> Du kannst alle Bücher durchstöbern. 
               <span className="ml-2">
-                <Auth onAuthSuccess={() => console.log('Auth success!')} />
+                <LoginButton onAuthSuccess={() => console.log('Auth success!')} />
               </span>
               {" "}zum Abstimmen und Bücher vorschlagen.
             </p>
