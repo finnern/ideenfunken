@@ -143,7 +143,7 @@ function App() {
               </>
             ) : (
               <div className="flex items-center gap-2">
-                <span>Anmelden zum Abstimmen:</span>
+                <span>Anmelden zum Abstimmen und Vorschlagen:</span>
                 <Auth onAuthSuccess={() => console.log('Auth success!')} />
               </div>
             )}
@@ -202,55 +202,59 @@ function App() {
       )}
 
       {/* Main Content */}
-      {user ? (
-        <main className="max-w-7xl mx-auto px-4 py-4">
-          {/* Sort Controls */}
-          <div className="flex justify-end mb-4">
-            <div className="flex gap-2">
-              <button
-                onClick={() => setSortBy('votes')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  sortBy === 'votes'
-                    ? 'bg-yellow-500 text-black'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                <TrendingUp className="w-4 h-4 inline mr-1" />
-                Stimmen
-              </button>
-              <button
-                onClick={() => setSortBy('latest')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  sortBy === 'latest'
-                    ? 'bg-yellow-500 text-black'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                <Clock className="w-4 h-4 inline mr-1" />
-                Neueste
-              </button>
-            </div>
+      <main className="max-w-7xl mx-auto px-4 py-4">
+        {/* Sort Controls */}
+        <div className="flex justify-end mb-4">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSortBy('votes')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                sortBy === 'votes'
+                  ? 'bg-yellow-500 text-black'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              <TrendingUp className="w-4 h-4 inline mr-1" />
+              Stimmen
+            </button>
+            <button
+              onClick={() => setSortBy('latest')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                sortBy === 'latest'
+                  ? 'bg-yellow-500 text-black'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              <Clock className="w-4 h-4 inline mr-1" />
+              Neueste
+            </button>
           </div>
-
-          {/* Books Grid */}
-          <BookListVoting 
-            key={refreshKey} 
-            user={user} 
-            sortBy={sortBy}
-            userVoteCount={userVoteCount}
-            onVoteChange={(increment) => {
-              setUserVoteCount(prev => increment ? prev + 1 : Math.max(0, prev - 1))
-            }}
-          />
-        </main>
-      ) : (
-        /* Login Prompt */
-        <div className="max-w-md mx-auto px-4 py-8 text-center">
-          <h2 className="text-xl font-bold mb-4">Login erforderlich</h2>
-          <p className="text-gray-600 mb-6">Melde dich an, um für Bücher zu stimmen.</p>
-          <Auth onAuthSuccess={() => console.log('Auth success!')} />
         </div>
-      )}
+
+        {/* Login Prompt for Non-Logged Users */}
+        {!user && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p className="text-center text-blue-800">
+              <strong>Hinweis:</strong> Du kannst alle Bücher durchstöbern. 
+              <span className="ml-2">
+                <Auth onAuthSuccess={() => console.log('Auth success!')} />
+              </span>
+              {" "}zum Abstimmen und Bücher vorschlagen.
+            </p>
+          </div>
+        )}
+
+        {/* Books Grid */}
+        <BookListVoting 
+          key={refreshKey} 
+          user={user} 
+          sortBy={sortBy}
+          userVoteCount={userVoteCount}
+          onVoteChange={(increment) => {
+            setUserVoteCount(prev => increment ? prev + 1 : Math.max(0, prev - 1))
+          }}
+        />
+      </main>
 
       {/* Credits Section */}
       <footer className="bg-gray-100 border-t border-gray-200 mt-8">

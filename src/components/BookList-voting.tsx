@@ -4,7 +4,7 @@ import BookCard from './BookCard-simple'
 import { Loader2 } from 'lucide-react'
 
 interface BookListVotingProps {
-  user: any
+  user: any | null
   sortBy: 'votes' | 'latest'
   userVoteCount: number
   onVoteChange: (increment: boolean) => void
@@ -33,7 +33,10 @@ export default function BookListVoting({ user, sortBy, userVoteCount, onVoteChan
   }, [books, sortBy])
 
   const handleVoteChange = (_bookId: string, increment: boolean) => {
-    onVoteChange(increment)
+    // Only call onVoteChange if user is logged in
+    if (user) {
+      onVoteChange(increment)
+    }
   }
 
   const handleExpand = (bookId: string) => {
