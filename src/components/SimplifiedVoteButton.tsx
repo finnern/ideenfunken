@@ -60,58 +60,56 @@ export default function SimplifiedVoteButton({
 
     try {
       if (hasVoted) {
-        // Remove vote
-        const { error: deleteError } = await supabase
-          .from('book_votes')
-          .delete()
-          .eq('book_id', bookId)
-          .eq('user_id', user.id)
+        // Use secure remove vote function
+        const { data, error } = await supabase.rpc('secure_remove_vote', {
+          book_id_param: bookId
+        })
 
-        if (deleteError) throw deleteError
-
-        // Decrement book votes count
-        const { error: updateError } = await supabase
-          .from('books')
-          .update({ votes: Math.max(0, currentVotes - 1) })
-          .eq('id', bookId)
-
-        if (updateError) throw updateError
-
-        setHasVoted(false)
-        setUserVoteCount(prev => prev - 1)
-        onVoteChange?.(currentVotes - 1)
-        toast.success('Vote removed')
-
-      } else {
-        // Check vote limit
-        if (userVoteCount >= 10) {
-          toast.error('You have reached the maximum of 10 votes')
-          return
+        if (error) {
+          throw new Error(error.message)
         }
 
-        // Add vote
-        const { error: insertError } = await supabase
-          .from('book_votes')
-          .insert([{ book_id: bookId, user_id: user.id }])
+        if (data) {
+          setHasVoted(false)
+          setUserVoteCount(prev => prev - 1)
+          onVoteChange?.(currentVotes - 1)
+          toast.success('Vote removed')
+        }
 
-        if (insertError) throw insertError
+      } else {
+        // Use secure add vote function
+        const { data, error } = await supabase.rpc('secure_add_vote', {
+          book_id_param: bookId
+        })
 
-        // Increment book votes count
-        const { error: updateError } = await supabase
-          .from('books')
-          .update({ votes: currentVotes + 1 })
-          .eq('id', bookId)
+        if (error) {
+          throw new Error(error.message)
+        }
 
-        if (updateError) throw updateError
-
-        setHasVoted(true)
-        setUserVoteCount(prev => prev + 1)
-        onVoteChange?.(currentVotes + 1)
-        toast.success('Vote added')
+        if (data) {
+          setHasVoted(true)
+          setUserVoteCount(prev => prev + 1)
+          onVoteChange?.(currentVotes + 1)
+          toast.success('Vote added')
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error voting:', error)
-      toast.error('Failed to vote. Please try again.')
+      
+      // Handle specific error messages from secure functions
+      const errorMessage = error.message || 'Failed to vote. Please try again.'
+      
+      if (errorMessage.includes('No votes remaining')) {
+        toast.error('You have no votes remaining')
+      } else if (errorMessage.includes('Vote already exists')) {
+        toast.error('You have already voted for this book')
+      } else if (errorMessage.includes('Cannot vote on own suggestion')) {
+        toast.error('You cannot vote on your own book suggestion')
+      } else if (errorMessage.includes('Vote not found')) {
+        toast.error('Vote not found to remove')
+      } else {
+        toast.error(errorMessage)
+      }
     } finally {
       setLoading(false)
     }

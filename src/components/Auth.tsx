@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { toast } from 'sonner'
 import { Loader2, Mail, Lock } from 'lucide-react'
+import { validateEmail, validatePassword, rateLimit } from '../lib/security'
 
 interface AuthProps {
   onAuthSuccess?: () => void
@@ -15,8 +16,33 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email || !password) {
-      toast.error('Please fill in all fields')
+    
+    // Rate limiting check
+    const rateLimitKey = `auth:${email}`
+    if (!rateLimit.isAllowed(rateLimitKey, 5, 300000)) { // 5 attempts per 5 minutes
+      toast.error('Too many attempts. Please wait before trying again.')
+      return
+    }
+    
+    // Validate email
+    const emailValidation = validateEmail(email)
+    if (!emailValidation.isValid) {
+      toast.error(emailValidation.error)
+      return
+    }
+    
+    // Validate password for signup
+    if (!isLogin) {
+      const passwordValidation = validatePassword(password)
+      if (!passwordValidation.isValid) {
+        toast.error(passwordValidation.error)
+        return
+      }
+    }
+    
+    // For login, just check if password exists
+    if (isLogin && !password) {
+      toast.error('Password is required')
       return
     }
 
@@ -30,18 +56,42 @@ export default function Auth({ onAuthSuccess }: AuthProps) {
         })
         if (error) throw error
         toast.success('Logged in successfully!')
+        // Reset rate limit on successful login
+        rateLimit.reset(rateLimitKey)
       } else {
         const { error } = await supabase.auth.signUp({
           email,
-          password
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`
+          }
         })
         if (error) throw error
         toast.success('Account created! Please check your email to verify.')
+        // Reset rate limit on successful signup
+        rateLimit.reset(rateLimitKey)
       }
       
       onAuthSuccess?.()
     } catch (error: any) {
-      toast.error(error.message || 'Authentication failed')
+      console.error('Auth error:', error)
+      
+      // Handle specific error messages
+      let errorMessage = 'Authentication failed'
+      
+      if (error.message?.includes('Invalid login credentials')) {
+        errorMessage = 'Invalid email or password'
+      } else if (error.message?.includes('Email not confirmed')) {
+        errorMessage = 'Please check your email and confirm your account'
+      } else if (error.message?.includes('User already registered')) {
+        errorMessage = 'An account with this email already exists'
+      } else if (error.message?.includes('Password should be at least 6 characters')) {
+        errorMessage = 'Password must be at least 6 characters long'
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
     }

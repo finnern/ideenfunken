@@ -3,6 +3,7 @@ import { Search, Plus, Loader2, BookOpen } from 'lucide-react'
 import { toast } from 'sonner'
 import { supabase } from '../lib/supabase'
 import BookCover from './BookCover'
+import { sanitizeTextInput, validateDescription, rateLimit } from '../lib/security'
 
 // Simple Google Books interface
 interface SimpleGoogleBook {
@@ -74,17 +75,26 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
     }
   }
 
-  // Search with debouncing
+  // Search with debouncing and validation
   useEffect(() => {
     const performSearch = async () => {
-      if (!searchQuery.trim() || searchQuery.length < 3) {
+      const sanitizedQuery = sanitizeTextInput(searchQuery, 100)
+      
+      if (!sanitizedQuery.trim() || sanitizedQuery.length < 3) {
         setSearchResults([])
+        return
+      }
+      
+      // Rate limiting for search requests
+      const rateLimitKey = `search:${user?.id || 'anonymous'}`
+      if (!rateLimit.isAllowed(rateLimitKey, 10, 60000)) { // 10 searches per minute
+        toast.error('Too many search requests. Please wait a moment.')
         return
       }
       
       setIsLoading(true)
       try {
-        const results = await searchGoogleBooks(searchQuery)
+        const results = await searchGoogleBooks(sanitizedQuery)
         setSearchResults(results)
       } catch (error) {
         console.error('Search error:', error)
@@ -96,7 +106,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
 
     const timeoutId = setTimeout(performSearch, 500)
     return () => clearTimeout(timeoutId)
-  }, [searchQuery])
+  }, [searchQuery, user?.id])
 
   const extractIsbn = (book: SimpleGoogleBook): string | null => {
     return book.volumeInfo.industryIdentifiers?.find(
@@ -110,7 +120,15 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
   const handleAddBook = async (book: SimpleGoogleBook) => {
     const quote = inspirationQuotes[book.id] || ''
     
-    if (quote.trim().length < 30) {
+    // Validate inspiration quote
+    const quoteValidation = validateDescription(quote)
+    if (!quoteValidation.isValid) {
+      toast.error(quoteValidation.error)
+      return
+    }
+    
+    const sanitizedQuote = sanitizeTextInput(quote, 2000)
+    if (sanitizedQuote.trim().length < 30) {
       toast.error('Please provide a meaningful inspiration quote (at least 30 characters)')
       return
     }
