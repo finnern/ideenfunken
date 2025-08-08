@@ -25,8 +25,17 @@ export default function HeroSlim({ remainingVotes, onSuggestClick }: HeroSlimPro
 
           {/* Inline chips (single row on desktop, wraps on mobile) */}
           <ul className="flex flex-wrap items-center gap-2 text-xs md:text-sm">
-            <li className="px-2.5 py-1 rounded-full bg-white/80 border border-yellow-500">
-              Vorschlagen (bis 3 – zum Start gern mehr)
+            <li className="flex flex-col gap-1">
+              <span className="px-2.5 py-1 rounded-full bg-white/80 border border-yellow-500">
+                Einfach Bücher Vorschlagen
+              </span>
+              <button
+                onClick={onSuggestClick}
+                className="text-xs underline font-medium decoration-1 underline-offset-2 hover:opacity-80 transition-opacity text-left"
+                type="button"
+              >
+                Buch vorschlagen
+              </button>
             </li>
             <li className="px-2.5 py-1 rounded-full bg-white/80 border border-yellow-500">
               Abstimmen (5 Stimmen)
@@ -35,8 +44,8 @@ export default function HeroSlim({ remainingVotes, onSuggestClick }: HeroSlimPro
               Top&nbsp;10 → Mediathek
             </li>
 
-            {/* Right-aligned bits on wider screens */}
-            <li className="ms-auto flex items-center gap-3">
+            {/* Right-aligned vote counter */}
+            <li className="ms-auto">
               <span
                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-black/20 bg-black/5"
                 aria-live="polite"
@@ -44,14 +53,6 @@ export default function HeroSlim({ remainingVotes, onSuggestClick }: HeroSlimPro
               >
                 Noch <strong className="tabular-nums">{remainingVotes}</strong> / 5&nbsp;Stimmen
               </span>
-
-              <button
-                onClick={onSuggestClick}
-                className="underline font-medium decoration-2 underline-offset-4 hover:opacity-80 transition-opacity"
-                type="button"
-              >
-                Buch vorschlagen
-              </button>
             </li>
           </ul>
         </div>

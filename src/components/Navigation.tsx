@@ -37,12 +37,31 @@ export default function Navigation() {
     <nav className="bg-white shadow-sm border-b border-gray-200">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-2">
-            <BookOpen className="w-8 h-8 text-blue-500" />
-            <h1 className="text-xl font-bold text-gray-800">Ideenfunken</h1>
+          <div className="flex items-center space-x-4">
+            <img 
+              src="/assets/images/make-it-in-schramberg-logo.png" 
+              alt="Make it in Schramberg" 
+              className="h-8 w-auto"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <div className="flex items-center space-x-2">
+              <BookOpen className="w-8 h-8 text-blue-500" />
+              <h1 className="text-xl font-bold text-gray-800">Ideenfunken</h1>
+            </div>
           </div>
           
           <div className="flex items-center space-x-4">
+            <img 
+              src="/assets/images/KI-Impact-Group-Logo.png" 
+              alt="KI Impact Group" 
+              className="h-8 w-auto"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <div className="flex items-center space-x-4">
             {loading ? (
               <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
             ) : user ? (
@@ -65,6 +84,7 @@ export default function Navigation() {
                 <span>Not logged in</span>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>
