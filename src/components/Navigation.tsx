@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { User, LogOut, BookOpen, Users } from 'lucide-react'
 import { toast } from 'sonner'
-import makeItInSchrambergLogo from '../assets/images/make-it-in-schramberg-logo.jpg'
-import kiImpactGroupLogo from '../assets/images/Ki-Impact-Group-Logo.png'
 
 export default function Navigation() {
   const [user, setUser] = useState<any>(null)
@@ -38,35 +36,13 @@ export default function Navigation() {
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200">
       <div className="container mx-auto px-4">
-        <div className="flex items-center h-16 relative">
-          {/* Left logo */}
-          <div className="flex items-center">
-            <img 
-              src={makeItInSchrambergLogo}
-              alt="Make it in Schramberg" 
-              className="h-8 w-auto"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
-          </div>
-          
-          {/* Centered title */}
-          <div className="flex items-center space-x-2 absolute left-1/2 transform -translate-x-1/2">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center space-x-2">
             <BookOpen className="w-8 h-8 text-blue-500" />
             <h1 className="text-xl font-bold text-gray-800">Ideenfunken</h1>
           </div>
           
-          {/* Right side - logo and user info */}
-          <div className="flex items-center space-x-4 ml-auto">
-            <img 
-              src={kiImpactGroupLogo}
-              alt="KI Impact Group" 
-              className="h-8 w-auto"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
+          <div className="flex items-center space-x-4">
             {loading ? (
               <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
             ) : user ? (

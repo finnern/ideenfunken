@@ -5,10 +5,28 @@ import { Plus, ChevronDown, ChevronUp, TrendingUp, Clock } from 'lucide-react'
 import LoginButton from './components/LoginButton'
 import BookListVoting from './components/BookList-voting'
 import BookSearchFixed from './components/BookSearch-fixed'
-import HeroSlim from './components/HeroSlim'
-import { VoteCounterBadge } from './components/VoteCounterBadge'
-import AboutIdeenfunken from './components/AboutIdeenfunken'
-import Navigation from './components/Navigation'
+
+// Logo component with fallback - responsive sizing for prominence
+const LogoWithFallback = ({ src, alt, fallbackText }: { src: string, alt: string, fallbackText: string }) => {
+  const [imageError, setImageError] = useState(false)
+  
+  if (imageError) {
+    return (
+      <div className="h-8 md:h-10 flex items-center px-2 md:px-3 bg-white bg-opacity-20 rounded text-xs md:text-sm font-medium">
+        {fallbackText}
+      </div>
+    )
+  }
+  
+  return (
+    <img 
+      src={src}
+      alt={alt}
+      className="h-8 md:h-10 object-contain opacity-90 bg-white rounded px-1"
+      onError={() => setImageError(true)}
+    />
+  )
+}
 
 function App() {
   const [user, setUser] = useState<any>(null)
@@ -79,57 +97,72 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <Navigation />
-      
-      {/* Slim Hero Section */}
-      <HeroSlim 
-        remainingVotes={5 - userVoteCount}
-        onSuggestClick={() => {
-          setShowBookSuggestion(true);
-          // Scroll to suggestion section after a brief delay
-          setTimeout(() => {
-            const suggestSection = document.querySelector('[data-suggest-section]');
-            if (suggestSection) {
-              suggestSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }, 100);
-        }}
-      />
-
-      {/* Auth Controls for Non-Logged Users */}
-      {!user && (
-        <div className="bg-gray-50 border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 py-3 text-center">
-            <div className="flex items-center justify-center gap-2 text-sm">
-              <span>Anmelden zum Abstimmen und Vorschlagen:</span>
-              <LoginButton onAuthSuccess={() => console.log('Auth success!')} />
+      {/* Professional Header with Sponsor Logos */}
+      <header className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black px-4 py-3">
+        <div className="max-w-7xl mx-auto">
+          {/* Main Header Row with Logos and Title */}
+          <div className="flex items-center justify-between mb-2 gap-2 md:gap-4">
+            {/* Left Logo - KI Impact Group */}
+            <div className="flex-shrink-0">
+              <LogoWithFallback 
+                src="/assets/images/KI-Impact-Group-Logo.png"
+                alt="KI Impact Group"
+                fallbackText="KI Impact"
+              />
+            </div>
+            
+            {/* Center - Main Title */}
+            <div className="flex-1 text-center px-2">
+              <h1 className="text-xl md:text-3xl font-bold leading-tight">
+                IDEENFUNKEN | SCHRAMBERGS KREATIVE LESEWELT
+              </h1>
+            </div>
+            
+            {/* Right Logo - Make it in Schramberg */}
+            <div className="flex-shrink-0">
+              <LogoWithFallback 
+                src="/assets/images/make-it-in-schramberg-logo.png"
+                alt="Make it in Schramberg"
+                fallbackText="Make it in Schramberg"
+              />
             </div>
           </div>
-        </div>
-      )}
-
-      {/* User Controls for Logged Users */}
-      {user && (
-        <div className="bg-gray-50 border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 py-3 text-center">
-            <div className="flex items-center justify-center gap-4 text-sm">
-              <span className="font-medium">{userVoteCount}/5 Stimmen verwendet</span>
-              <span>|</span>
-              <button
-                onClick={async () => await supabase.auth.signOut()}
-                className="underline hover:no-underline"
-              >
-                Logout
-              </button>
-            </div>
+          
+          {/* Controls Row */}
+          <div className="flex items-center justify-center gap-4 text-sm">
+            {user ? (
+              <>
+                <span className="font-medium">{userVoteCount}/5 Stimmen</span>
+                <span>|</span>
+                <button
+                  onClick={async () => await supabase.auth.signOut()}
+                  className="underline hover:no-underline"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span>Anmelden zum Abstimmen und Vorschlagen:</span>
+                <LoginButton onAuthSuccess={() => console.log('Auth success!')} />
+              </div>
+            )}
           </div>
         </div>
-      )}
+      </header>
+
+      {/* Welcome Invitation Text */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 py-4 text-center">
+          <p className="text-gray-700 text-base md:text-lg font-medium">
+            Eine Einladung an Schramberg und Umgebung: Teilt innovative Bücher, die euer Leben verbessert haben!
+          </p>
+        </div>
+      </div>
 
       {/* Collapsible Book Suggestion Banner */}
       {user && (
-        <div className="bg-yellow-100 border-b border-yellow-200" data-suggest-section>
+        <div className="bg-yellow-100 border-b border-yellow-200">
           <div className="max-w-7xl mx-auto px-4">
             {/* Compact Banner */}
             <div className="text-center">
@@ -171,11 +204,7 @@ function App() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4">
         {/* Sort Controls */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            {user && <VoteCounterBadge remaining={5 - userVoteCount} />}
-          </div>
-          
+        <div className="flex justify-end mb-4">
           <div className="flex gap-2">
             <button
               onClick={() => setSortBy('votes')}
@@ -202,6 +231,18 @@ function App() {
           </div>
         </div>
 
+        {/* Login Prompt for Non-Logged Users */}
+        {!user && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p className="text-center text-blue-800">
+              <strong>Hinweis:</strong> Du kannst alle Bücher durchstöbern. 
+              <span className="ml-2">
+                <LoginButton onAuthSuccess={() => console.log('Auth success!')} />
+              </span>
+              {" "}zum Abstimmen und Bücher vorschlagen.
+            </p>
+          </div>
+        )}
 
         {/* Books Grid */}
         <BookListVoting 
@@ -214,9 +255,6 @@ function App() {
           }}
         />
       </main>
-
-      {/* About Section */}
-      <AboutIdeenfunken />
 
       {/* Credits Section */}
       <footer className="bg-gray-100 border-t border-gray-200 mt-8">
