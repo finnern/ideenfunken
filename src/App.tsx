@@ -8,6 +8,7 @@ import BookSearchFixed from './components/BookSearch-fixed'
 import HeroSlim from './components/HeroSlim'
 import { VoteCounterBadge } from './components/VoteCounterBadge'
 import AboutIdeenfunken from './components/AboutIdeenfunken'
+import Navigation from './components/Navigation'
 
 function App() {
   const [user, setUser] = useState<any>(null)
@@ -78,6 +79,9 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Navigation */}
+      <Navigation />
+      
       {/* Slim Hero Section */}
       <HeroSlim 
         remainingVotes={5 - userVoteCount}

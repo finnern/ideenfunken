@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { User, LogOut, BookOpen, Users } from 'lucide-react'
 import { toast } from 'sonner'
+import makeItInSchrambergLogo from '../assets/images/make-it-in-schramberg-logo.jpg'
+import kiImpactGroupLogo from '../assets/images/Ki-Impact-Group-Logo.png'
 
 export default function Navigation() {
   const [user, setUser] = useState<any>(null)
@@ -40,7 +42,7 @@ export default function Navigation() {
           {/* Left logo */}
           <div className="flex items-center">
             <img 
-              src="/assets/images/make-it-in-schramberg-logo.jpg" 
+              src={makeItInSchrambergLogo}
               alt="Make it in Schramberg" 
               className="h-8 w-auto"
               onError={(e) => {
@@ -58,7 +60,7 @@ export default function Navigation() {
           {/* Right side - logo and user info */}
           <div className="flex items-center space-x-4 ml-auto">
             <img 
-              src="/assets/images/KI-Impact-Group-Logo.png" 
+              src={kiImpactGroupLogo}
               alt="KI Impact Group" 
               className="h-8 w-auto"
               onError={(e) => {
