@@ -36,10 +36,11 @@ export default function Navigation() {
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center h-16 relative">
+          {/* Left logo */}
+          <div className="flex items-center">
             <img 
-              src="/assets/images/make-it-in-schramberg-logo.png" 
+              src="/assets/images/make-it-in-schramberg-logo.jpg" 
               alt="Make it in Schramberg" 
               className="h-8 w-auto"
               onError={(e) => {
@@ -48,12 +49,14 @@ export default function Navigation() {
             />
           </div>
           
+          {/* Centered title */}
           <div className="flex items-center space-x-2 absolute left-1/2 transform -translate-x-1/2">
             <BookOpen className="w-8 h-8 text-blue-500" />
             <h1 className="text-xl font-bold text-gray-800">Ideenfunken</h1>
           </div>
           
-          <div className="flex items-center space-x-4">
+          {/* Right side - logo and user info */}
+          <div className="flex items-center space-x-4 ml-auto">
             <img 
               src="/assets/images/KI-Impact-Group-Logo.png" 
               alt="KI Impact Group" 
@@ -62,7 +65,6 @@ export default function Navigation() {
                 e.currentTarget.style.display = 'none';
               }}
             />
-            <div className="flex items-center space-x-4">
             {loading ? (
               <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
             ) : user ? (
@@ -85,7 +87,6 @@ export default function Navigation() {
                 <span>Not logged in</span>
               </div>
             )}
-            </div>
           </div>
         </div>
       </div>
