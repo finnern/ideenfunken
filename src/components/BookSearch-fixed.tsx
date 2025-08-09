@@ -88,7 +88,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
       // Rate limiting for search requests
       const rateLimitKey = `search:${user?.id || 'anonymous'}`
       if (!rateLimit.isAllowed(rateLimitKey, 10, 60000)) { // 10 searches per minute
-        toast.error('Too many search requests. Please wait a moment.')
+        toast.error('Zu viele Suchanfragen. Bitte einen Moment warten.')
         return
       }
       
@@ -98,7 +98,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
         setSearchResults(results)
       } catch (error) {
         console.error('Search error:', error)
-        toast.error('Failed to search books. Please try again.')
+        toast.error('Suche fehlgeschlagen. Bitte erneut versuchen.')
       } finally {
         setIsLoading(false)
       }
@@ -129,12 +129,12 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
     
     const sanitizedQuote = sanitizeTextInput(quote, 2000)
     if (sanitizedQuote.trim().length < 30) {
-      toast.error('Please provide a meaningful inspiration quote (at least 30 characters)')
+      toast.error('Bitte gib ein aussagekräftiges Inspirations‑Zitat an (mind. 30 Zeichen)')
       return
     }
 
     if (userBookCount >= 3) {
-      toast.error('You have already suggested 3 books (maximum limit)')
+      toast.error('Du hast bereits 3 Bücher vorgeschlagen (Maximalgrenze)')
       return
     }
     
@@ -150,7 +150,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
         .eq('isbn', isbn)
         
       if (existingBooks && existingBooks.length > 0) {
-        toast.error(`This book has already been suggested: "${existingBooks[0].title}"`)
+        toast.error(`Dieses Buch wurde bereits vorgeschlagen: "${existingBooks[0].title}"`)
         return
       }
       
@@ -173,7 +173,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
       
       if (error) throw error
       
-      toast.success('Book added successfully!')
+      toast.success('Buch erfolgreich vorgeschlagen!')
       
       // Clear everything and close selection
       setSearchQuery('')
@@ -187,7 +187,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
       
     } catch (error) {
       console.error('Error adding book:', error)
-      toast.error('Failed to add book. Please try again.')
+      toast.error('Buch konnte nicht hinzugefügt werden. Bitte erneut versuchen.')
     } finally {
       setAddingBooks(prev => ({ ...prev, [book.id]: false }))
     }
@@ -198,10 +198,10 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
         <BookOpen className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-yellow-800 mb-2">
-          Maximum Books Reached
+          Maximale Anzahl erreicht
         </h3>
         <p className="text-yellow-700">
-          You have already suggested 3 books (maximum limit). You can still vote on existing books!
+          Du hast bereits 3 Bücher vorgeschlagen (Maximalgrenze). Du kannst weiterhin für vorhandene Bücher abstimmen!
         </p>
       </div>
     )
@@ -211,15 +211,15 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
         <Plus className="w-6 h-6 text-blue-600" />
-        Suggest a New Book
+        Buch vorschlagen
       </h2>
       
       <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
         <p className="text-blue-800 text-sm mb-2">
-          📚 Search for inspiring books to add to our community collection. You can suggest up to 3 books. ({userBookCount}/3 used)
+          📚 Suche nach inspirierenden Büchern für unsere Sammlung. Du kannst bis zu 3 Bücher vorschlagen. ({userBookCount}/3 genutzt)
         </p>
         <p className="text-blue-700 text-sm font-medium">
-          💡 Inspiration quote is mandatory - explain why this book would inspire our community!
+          💡 Inspirations‑Zitat ist Pflicht – erkläre, warum dieses Buch unsere Community inspiriert!
         </p>
       </div>
 
@@ -232,7 +232,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
             onChange={(e) => setIsAnonymous(e.target.checked)}
             className="rounded"
           />
-          <span className="text-gray-700">Make this recommendation anonymous</span>
+          <span className="text-gray-700">Diesen Vorschlag anonym machen</span>
         </label>
       </div>
 
@@ -243,7 +243,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search for books by title or author..."
+          placeholder="Nach Büchern nach Titel oder Autor/in suchen..."
           className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -252,14 +252,14 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
       {isLoading && (
         <div className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-600">Searching books...</span>
+          <span className="ml-2 text-gray-600">Suche Bücher...</span>
         </div>
       )}
 
       {/* Search Results */}
       {searchResults.length > 0 && (
         <div className="space-y-4">
-          <h3 className="font-semibold text-gray-800">Search Results</h3>
+          <h3 className="font-semibold text-gray-800">Suchergebnisse</h3>
           <div className="grid gap-4">
             {searchResults.map((book) => (
               <div key={book.id} className="border border-gray-200 rounded-lg p-4">
@@ -268,7 +268,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
                     <BookCover
                       coverUrl={book.volumeInfo.imageLinks?.thumbnail?.replace('http:', 'https:') || null}
                       title={book.volumeInfo.title}
-                      author={book.volumeInfo.authors?.[0] || 'Unknown'}
+                      author={book.volumeInfo.authors?.[0] || 'Unbekannt'}
                       className="w-full h-full rounded"
                     />
                   </div>
@@ -276,7 +276,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
                   <div className="flex-1">
                     <h4 className="font-semibold text-lg mb-1">{book.volumeInfo.title}</h4>
                     <p className="text-gray-600 mb-2">
-                      {book.volumeInfo.authors?.join(', ') || 'Unknown Author'}
+                      {book.volumeInfo.authors?.join(', ') || 'Unbekannte/r Autor/in'}
                     </p>
                     
                     {book.volumeInfo.description && (
@@ -288,7 +288,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
                     {/* Inspiration Quote Input */}
                     <div className="mb-3">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Why is this book inspiring? (Required, min 30 characters) *
+                        Warum ist dieses Buch inspirierend? (Pflichtfeld, mind. 30 Zeichen) *
                       </label>
                       <textarea
                         value={inspirationQuotes[book.id] || ''}
@@ -296,12 +296,12 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
                           ...prev, 
                           [book.id]: e.target.value 
                         }))}
-                        placeholder="Explain why this book would inspire the community..."
+                        placeholder="Erkläre, warum dieses Buch die Community inspirieren würde..."
                         className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         rows={3}
                       />
                       <div className="text-xs text-gray-500 mt-1">
-                        {(inspirationQuotes[book.id] || '').length}/30 characters minimum
+                        {(inspirationQuotes[book.id] || '').length}/30 Zeichen Minimum
                       </div>
                     </div>
 
@@ -326,7 +326,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
                       ) : (
                         <Plus className="w-4 h-4" />
                       )}
-                      {addingBooks[book.id] ? 'Adding...' : 'Add Book'}
+                      {addingBooks[book.id] ? 'Wird hinzugefügt...' : 'Buch hinzufügen'}
                     </button>
                   </div>
                 </div>
@@ -340,7 +340,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
       {searchQuery.length >= 3 && !isLoading && searchResults.length === 0 && (
         <div className="text-center py-8 text-gray-500">
           <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No books found for "{searchQuery}". Try different search terms.</p>
+          <p>Keine Bücher gefunden für "{searchQuery}". Bitte andere Suchbegriffe versuchen.</p>
         </div>
       )}
     </div>
