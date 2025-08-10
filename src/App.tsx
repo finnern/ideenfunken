@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react'
 import { Toaster } from 'sonner'
 import { supabase } from './lib/supabase'
 import { Plus, ChevronDown, ChevronUp, TrendingUp, Clock } from 'lucide-react'
+import { Routes, Route } from 'react-router-dom'
 import LoginButton from './components/LoginButton'
 import BookListVoting from './components/BookList-voting'
 import BookSearchFixed from './components/BookSearch-fixed'
+import BookDetail from './pages/BookDetail'
 
 // Logo component with fallback - responsive sizing for prominence
 const LogoWithFallback = ({ src, alt, fallbackText }: { src: string, alt: string, fallbackText: string }) => {
@@ -204,57 +206,67 @@ function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-4">
-        {/* Sort Controls */}
-        <div className="flex justify-end mb-4">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setSortBy('votes')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                sortBy === 'votes'
-                  ? 'bg-yellow-500 text-black'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              <TrendingUp className="w-4 h-4 inline mr-1" />
-              Stimmen
-            </button>
-            <button
-              onClick={() => setSortBy('latest')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                sortBy === 'latest'
-                  ? 'bg-yellow-500 text-black'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              <Clock className="w-4 h-4 inline mr-1" />
-              Neueste
-            </button>
-          </div>
-        </div>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                {/* Sort Controls */}
+                <div className="flex justify-end mb-4">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setSortBy('votes')}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        sortBy === 'votes'
+                          ? 'bg-yellow-500 text-black'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      <TrendingUp className="w-4 h-4 inline mr-1" />
+                      Stimmen
+                    </button>
+                    <button
+                      onClick={() => setSortBy('latest')}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                        sortBy === 'latest'
+                          ? 'bg-yellow-500 text-black'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      <Clock className="w-4 h-4 inline mr-1" />
+                      Neueste
+                    </button>
+                  </div>
+                </div>
 
-        {/* Login Prompt for Non-Logged Users */}
-        {!user && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <p className="text-center text-blue-800">
-              <strong>Hinweis:</strong> Du kannst alle Bücher durchstöbern. 
-              <span className="ml-2">
-                <LoginButton onAuthSuccess={() => console.log('Auth success!')} />
-              </span>
-              {" "}zum Abstimmen und Bücher vorschlagen.
-            </p>
-          </div>
-        )}
+                {/* Login Prompt for Non-Logged Users */}
+                {!user && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p className="text-center text-blue-800">
+                      <strong>Hinweis:</strong> Du kannst alle Bücher durchstöbern. 
+                      <span className="ml-2">
+                        <LoginButton onAuthSuccess={() => console.log('Auth success!')} />
+                      </span>
+                      {" "}zum Abstimmen und Bücher vorschlagen.
+                    </p>
+                  </div>
+                )}
 
-        {/* Books Grid */}
-        <BookListVoting 
-          key={refreshKey} 
-          user={user} 
-          sortBy={sortBy}
-          userVoteCount={userVoteCount}
-          onVoteChange={(increment) => {
-            setUserVoteCount(prev => increment ? prev + 1 : Math.max(0, prev - 1))
-          }}
-        />
+                {/* Books Grid */}
+                <BookListVoting 
+                  key={refreshKey} 
+                  user={user} 
+                  sortBy={sortBy}
+                  userVoteCount={userVoteCount}
+                  onVoteChange={(increment) => {
+                    setUserVoteCount(prev => increment ? prev + 1 : Math.max(0, prev - 1))
+                  }}
+                />
+              </>
+            }
+          />
+          <Route path="/books/:bookId" element={<BookDetail />} />
+        </Routes>
       </main>
 
       {/* About Section */}
