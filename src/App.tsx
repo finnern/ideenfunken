@@ -262,13 +262,13 @@ function App() {
         <section id="about-section" className="max-w-4xl mx-auto px-4 py-12">
           <h2 className="text-2xl font-semibold mb-4">Über Ideenfunken</h2>
 
-          <p className="mb-3"><strong>Herzlichen Dank</strong> an Simon und Tobias Hilgert, die Mediathek sowie die Stadt Schramberg fürs Mitmachen und die Unterstützung dieser Initiative!</p>
+          <p className="mb-3 rounded-md border border-yellow-200 bg-yellow-50 p-4"><strong>Herzlichen Dank</strong> an die Firma Simon, die Stadt Schramberg mit ihrer Mediathek sowie die Initiative „Make it in Schramberg” für die Unterstützung unserer Leseinitiative „Ideenfunken”.</p>
 
           <p className="mb-3">Diese Idee entstand aus einer inspirierenden Unterhaltung im Rahmen der <strong>KI-Impact Workshops</strong> – mit dem Ziel, den Blick auf Veränderung in unserer Region positiv zu gestalten.</p>
 
           <p className="mb-3">Mit den empfohlenen Büchern möchten wir Menschen erreichen, ihre Kreativität zu entfalten, innovativer zu denken, die Augen für neue Möglichkeiten zu öffnen – und sich die Erlaubnis zu geben, einfach mal etwas Neues auszuprobieren.</p>
 
-          <p className="mb-8"><strong>Ideenfunken</strong> möchte dazu beitragen, diesen Mut und diese Offenheit in Schramberg und den umliegenden Gemeinden zu stärken und die Bewegung für positiven Wandel sichtbar zu machen.</p>
+          <p className="mb-8 rounded-md border border-yellow-200 bg-yellow-50 p-4"><strong>Ideenfunken</strong> möchte dazu beitragen, diesen Mut und diese Offenheit in Schramberg und den umliegenden Gemeinden zu stärken – und eine Bewegung zu fördern, in der Menschen ermutigt werden, Neues auszuprobieren und wissen, dass eine Gemeinschaft hinter ihnen steht, die ihnen hilft, erfolgreich zu sein.</p>
 
           <h3 className="text-xl font-semibold mb-2">Wie funktioniert es?</h3>
           <ol className="list-decimal pl-6 space-y-2">
