@@ -130,7 +130,7 @@ function App() {
           
           {/* Controls Row */}
           <div className="flex items-center justify-center gap-4 text-sm">
-            <a href="#about-section" className="underline hover:no-underline">Über</a>
+            <a href="#about-section" className="underline hover:no-underline">Über Ideenfunken</a>
             {user ? (
               <>
                 <span className="font-medium">{userVoteCount}/5 Stimmen</span>
@@ -258,7 +258,7 @@ function App() {
       </main>
 
       {/* About Section */}
-      <footer className="bg-gray-100 border-t border-gray-200 mt-8">
+      <footer className="bg-yellow-100 border-t border-yellow-200 mt-8">
         <section id="about-section" className="max-w-4xl mx-auto px-4 py-12">
           <h2 className="text-2xl font-semibold mb-4">Über Ideenfunken</h2>
 
