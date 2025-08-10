@@ -258,7 +258,7 @@ function App() {
       </main>
 
       {/* About Section */}
-      <footer className="bg-yellow-100 border-t border-yellow-200 mt-8">
+      <footer className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-black border-t border-yellow-500 mt-8">
         <section id="about-section" className="max-w-4xl mx-auto px-4 py-12">
           <h2 className="text-2xl font-semibold mb-4">Über Ideenfunken</h2>
 
