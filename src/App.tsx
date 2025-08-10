@@ -130,6 +130,7 @@ function App() {
           
           {/* Controls Row */}
           <div className="flex items-center justify-center gap-4 text-sm">
+            <a href="#about-section" className="underline hover:no-underline">Über</a>
             {user ? (
               <>
                 <span className="font-medium">{userVoteCount}/5 Stimmen</span>
@@ -256,15 +257,26 @@ function App() {
         />
       </main>
 
-      {/* Credits Section */}
+      {/* About Section */}
       <footer className="bg-gray-100 border-t border-gray-200 mt-8">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="text-center">
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Herzlichen Dank an <strong>Tobias Hilgert</strong> und die <strong>Mediathek</strong> sowie die <strong>Stadt Schramberg</strong> fürs Mitmachen und die Unterstützung dieser Initiative!
-            </p>
-          </div>
-        </div>
+        <section id="about-section" className="max-w-4xl mx-auto px-4 py-12">
+          <h2 className="text-2xl font-semibold mb-4">Über Ideenfunken</h2>
+
+          <p className="mb-3"><strong>Herzlichen Dank</strong> an Simon und Tobias Hilgert, die Mediathek sowie die Stadt Schramberg fürs Mitmachen und die Unterstützung dieser Initiative!</p>
+
+          <p className="mb-3">Diese Idee entstand aus einer inspirierenden Unterhaltung im Rahmen der <strong>KI-Impact Workshops</strong> – mit dem Ziel, den Blick auf Veränderung in unserer Region positiv zu gestalten.</p>
+
+          <p className="mb-3">Mit den empfohlenen Büchern möchten wir Menschen erreichen, ihre Kreativität zu entfalten, innovativer zu denken, die Augen für neue Möglichkeiten zu öffnen – und sich die Erlaubnis zu geben, einfach mal etwas Neues auszuprobieren.</p>
+
+          <p className="mb-8"><strong>Ideenfunken</strong> möchte dazu beitragen, diesen Mut und diese Offenheit in Schramberg und den umliegenden Gemeinden zu stärken und die Bewegung für positiven Wandel sichtbar zu machen.</p>
+
+          <h3 className="text-xl font-semibold mb-2">Wie funktioniert es?</h3>
+          <ol className="list-decimal pl-6 space-y-2">
+            <li><strong>Schramberger</strong> schlagen Bücher vor, die helfen, kreativer, innovativer und offener zu werden.</li>
+            <li>Alle stimmen für ihre Favoriten ab – die <strong>Top 10</strong> werden von der Mediathek angeschafft.</li>
+            <li>Wer nicht warten möchte: Klicke beim gewünschten Buch auf den <strong>E‑Mail</strong>-Button. Es wird automatisch eine E‑Mail mit den Buchdetails vorformuliert, die du nach Bedarf <strong>anpassen und senden</strong> kannst.</li>
+          </ol>
+        </section>
       </footer>
       
       <Toaster 
