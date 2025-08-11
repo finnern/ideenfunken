@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useBooks } from '../hooks/useBooks'
 import BookCard from './BookCard-simple'
 import { Loader2 } from 'lucide-react'
@@ -13,6 +13,31 @@ interface BookListVotingProps {
 export default function BookListVoting({ user, sortBy, userVoteCount, onVoteChange }: BookListVotingProps) {
   const { books, loading, error } = useBooks()
   const [expandedBookId, setExpandedBookId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!books.length) return;
+    const url = new URL(window.location.href);
+    const rawIsbn = url.searchParams.get('isbn');
+    const rawId = url.searchParams.get('bookId') || url.searchParams.get('book') || url.searchParams.get('id');
+    let target: any = null;
+    const normalize = (v: string) => v.replace(/[-\s]/g, '');
+    if (rawIsbn) {
+      const norm = normalize(rawIsbn);
+      target = books.find((b: any) => b.isbn && normalize(String(b.isbn)) === norm);
+    }
+    if (!target && rawId) {
+      target = books.find((b: any) => b.id === rawId);
+    }
+    if (target) {
+      setExpandedBookId(target.id);
+      setTimeout(() => {
+        const el = document.getElementById(`book-${target.id}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 50);
+    }
+  }, [books]);
 
   // Sort books
   const sortedBooks = useMemo(() => {
@@ -40,7 +65,35 @@ export default function BookListVoting({ user, sortBy, userVoteCount, onVoteChan
   }
 
   const handleExpand = (bookId: string) => {
-    setExpandedBookId(expandedBookId === bookId ? null : bookId)
+    const expanding = expandedBookId !== bookId
+    setExpandedBookId(expanding ? bookId : null)
+
+    const url = new URL(window.location.href)
+    if (expanding) {
+      const book = books.find((b: any) => b.id === bookId)
+      const hasIsbn = book?.isbn && String(book.isbn).trim().length > 0
+      if (hasIsbn) {
+        const cleanIsbn = String(book!.isbn).replace(/[-\s]/g, '')
+        url.searchParams.set('isbn', cleanIsbn)
+        url.searchParams.delete('bookId')
+        url.searchParams.delete('book')
+        url.searchParams.delete('id')
+      } else {
+        url.searchParams.set('bookId', bookId)
+        url.searchParams.delete('isbn')
+      }
+      window.history.pushState({}, '', url)
+      setTimeout(() => {
+        const el = document.getElementById(`book-${bookId}`)
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 0)
+    } else {
+      url.searchParams.delete('isbn')
+      url.searchParams.delete('bookId')
+      url.searchParams.delete('book')
+      url.searchParams.delete('id')
+      window.history.replaceState({}, '', url)
+    }
   }
 
   if (loading) {
@@ -72,15 +125,16 @@ export default function BookListVoting({ user, sortBy, userVoteCount, onVoteChan
       {/* Books Grid - Better spacing and visual appeal */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {sortedBooks.map((book) => (
-          <BookCard 
-            key={book.id} 
-            book={book} 
-            user={user}
-            userVoteCount={userVoteCount}
-            onVoteChange={handleVoteChange}
-            isExpanded={expandedBookId === book.id}
-            onExpand={() => handleExpand(book.id)}
-          />
+          <div id={`book-${book.id}`} key={book.id}>
+            <BookCard 
+              book={book} 
+              user={user}
+              userVoteCount={userVoteCount}
+              onVoteChange={handleVoteChange}
+              isExpanded={expandedBookId === book.id}
+              onExpand={() => handleExpand(book.id)}
+            />
+          </div>
         ))}
       </div>
       
