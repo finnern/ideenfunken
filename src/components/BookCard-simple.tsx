@@ -206,7 +206,7 @@ Vielen Dank und beste Grüße`
       <div className="p-4">
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1">
-            <h3 className="font-semibold text-lg mb-1 line-clamp-2">{book.title}</h3>
+            <h3 className="font-semibold text-lg mb-1 line-clamp-2 min-h-[3.5rem]">{book.title}</h3>
             <p className="text-gray-600">{book.author}</p>
           </div>
           {(book.description || book.inspiration_quote) && (
