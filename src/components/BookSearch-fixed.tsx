@@ -56,17 +56,19 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
     checkUserBookCount()
   }, [user])
 
-  // Simple Google Books search
+  // Google Books search with ISBN detection (ISBN-10/ISBN-13)
   const searchGoogleBooks = async (query: string): Promise<SimpleGoogleBook[]> => {
     try {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=8&printType=books`
-      )
-      
+      const normalized = query.replace(/[-\s]/g, '').toUpperCase()
+      const isIsbn13 = /^\d{13}$/.test(normalized)
+      const isIsbn10 = /^[\dX]{10}$/.test(normalized)
+
+      const q = isIsbn13 || isIsbn10 ? `isbn:${normalized}` : query
+      const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=8&printType=books`
+      const response = await fetch(url)
       if (!response.ok) {
         throw new Error('Search failed')
       }
-      
       const data = await response.json()
       return data.items || []
     } catch (error) {
@@ -243,7 +245,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Nach Büchern nach Titel oder Autor/in suchen..."
+          placeholder="Nach Titel, Autor/in oder ISBN suchen..."
           className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
