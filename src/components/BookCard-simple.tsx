@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import BookCover from './BookCover'
 import { supabase } from '../lib/supabase'
-import { Heart, Loader2, ChevronDown, ChevronUp, Mail } from 'lucide-react'
+import { Heart, Loader2, ChevronDown, ChevronUp, Mail, Share2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface BookCardProps {
   book: any
@@ -123,9 +124,13 @@ export default function BookCard({ book, user, userVoteCount, onVoteChange, isEx
   }
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // Don't expand if clicking on vote button or email button
-    if ((e.target as HTMLElement).closest('button[data-vote-button]') || 
-        (e.target as HTMLElement).closest('a[data-email-button]')) {
+    // Don't expand if clicking on vote, email or share buttons
+    const target = e.target as HTMLElement
+    if (
+      target.closest('button[data-vote-button]') ||
+      target.closest('a[data-email-button]') ||
+      target.closest('button[data-share-button]')
+    ) {
       return
     }
     onExpand()
@@ -142,6 +147,40 @@ Autor: ${book.author}${book.isbn ? `\nISBN: ${book.isbn}` : ''}
 Vielen Dank und beste Grüße`
 
     return `mailto:schramberg@buchlese.net?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
+
+  const buildShareUrl = () => {
+    const base = `${window.location.origin}${window.location.pathname}`
+    const params = new URLSearchParams()
+    if (book.isbn && String(book.isbn).trim().length > 0) {
+      params.set('isbn', String(book.isbn).replace(/[-\s]/g, ''))
+    } else {
+      params.set('bookId', book.id)
+    }
+    return `${base}?${params.toString()}`
+  }
+
+  const handleShare = async () => {
+    const url = buildShareUrl()
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: book.title,
+          text: `Schau dir dieses Buch an: ${book.title} von ${book.author}`,
+          url
+        })
+        return
+      }
+    } catch {
+      // ignore share cancellation
+    }
+
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.success('Link kopiert!')
+    } catch {
+      alert('Link kopiert!')
+    }
   }
 
   return (
@@ -218,6 +257,19 @@ Vielen Dank und beste Grüße`
               <Mail className="w-3 h-3" />
               <span>Email</span>
             </a>
+
+            {/* Share Button (only when expanded) */}
+            {isExpanded && (
+              <button
+                data-share-button
+                onClick={(e) => { e.stopPropagation(); handleShare(); }}
+                className="flex items-center gap-1 px-2 py-1 rounded text-xs border border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors"
+                title="Buch-Link teilen"
+              >
+                <Share2 className="w-3 h-3" />
+                <span>Teilen</span>
+              </button>
+            )}
 
             {/* Vote Button */}
             {user ? (
