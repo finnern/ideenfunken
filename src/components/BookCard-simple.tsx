@@ -185,7 +185,7 @@ Vielen Dank und beste Grüße`
 
   return (
     <div 
-      className={`rounded-lg shadow-md overflow-hidden border transition-all duration-300 ease-in-out cursor-pointer ${
+      className={`rounded-lg shadow-md overflow-hidden border transition-all duration-300 ease-in-out cursor-pointer h-full flex flex-col ${
         isExpanded 
           ? 'bg-yellow-50 border-yellow-300 shadow-lg' 
           : 'bg-white border-gray-200 hover:shadow-lg hover:border-yellow-300'
@@ -203,7 +203,7 @@ Vielen Dank und beste Grüße`
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1">
             <h3 className="font-semibold text-lg mb-1 line-clamp-2 min-h-[3.5rem]">{book.title}</h3>
