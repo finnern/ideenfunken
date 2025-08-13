@@ -227,11 +227,13 @@ Vielen Dank und beste Grüße`
             </p>
           )}
 
-          {book.suggester_name && (
+          {(book.suggester_name || book.inspiration_quote) && (
             <div className="mb-3 p-2 bg-yellow-50 rounded border-l-4 border-yellow-200 transition-all duration-300">
-              <p className="font-bold text-yellow-900 mb-1" style={{fontSize: '1.1rem'}}>
-                Empfohlen von: {book.suggester_name}
-              </p>
+              {book.suggester_name && !book.is_anonymous && (
+                <p className="font-bold text-yellow-900 mb-1" style={{fontSize: '1.1rem'}}>
+                  Empfohlen von: {book.suggester_name}
+                </p>
+              )}
               {book.inspiration_quote && (
                 <p className={`text-sm text-yellow-700 italic transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'}`}>
                   "{book.inspiration_quote}"
