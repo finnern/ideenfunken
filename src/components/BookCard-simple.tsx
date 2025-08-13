@@ -227,20 +227,23 @@ Vielen Dank und beste Grüße`
             </p>
           )}
 
-          {(book.suggester_name || book.inspiration_quote) && (
-            <div className="mb-3 p-2 bg-yellow-50 rounded border-l-4 border-yellow-200 transition-all duration-300">
-              {book.suggester_name && !book.is_anonymous && (
-                <p className="font-bold text-yellow-900 mb-1" style={{fontSize: '1.1rem'}}>
-                  Empfohlen von: {book.suggester_name}
-                </p>
-              )}
-              {book.inspiration_quote && (
-                <p className={`text-sm text-yellow-700 italic transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'}`}>
-                  "{book.inspiration_quote}"
-                </p>
-              )}
-            </div>
-          )}
+          {/* Recommendation section - always reserve space for consistent height */}
+          <div className="mb-3 min-h-[4rem]">
+            {(book.suggester_name || book.inspiration_quote) && (
+              <div className="p-2 bg-yellow-50 rounded border-l-4 border-yellow-200 transition-all duration-300">
+                {book.suggester_name && !book.is_anonymous && (
+                  <p className="font-bold text-yellow-900 mb-1" style={{fontSize: '1.1rem'}}>
+                    Empfohlen von: {book.suggester_name}
+                  </p>
+                )}
+                {book.inspiration_quote && (
+                  <p className={`text-sm text-yellow-700 italic transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'}`}>
+                    "{book.inspiration_quote}"
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center justify-between">
