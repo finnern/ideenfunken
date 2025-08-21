@@ -236,6 +236,11 @@ Vielen Dank und beste Grüße`
                     Empfohlen von: {book.suggester_name}
                   </p>
                 )}
+                {book.is_anonymous && book.inspiration_quote && (
+                  <p className="font-bold text-yellow-900 mb-1" style={{fontSize: '1.1rem'}}>
+                    Anonym empfohlen:
+                  </p>
+                )}
                 {book.inspiration_quote && (
                   <p className={`text-sm text-yellow-700 italic transition-all duration-300 ${isExpanded ? '' : 'line-clamp-3'}`}>
                     "{book.inspiration_quote}"
