@@ -7,6 +7,8 @@ import LoginButton from './components/LoginButton'
 import BookListVoting from './components/BookList-voting'
 import BookSearchFixed from './components/BookSearch-fixed'
 import BookDetail from './pages/BookDetail'
+import Impressum from './pages/Impressum'
+import Datenschutz from './pages/Datenschutz'
 
 // Logo component with fallback - responsive sizing for prominence
 const LogoWithFallback = ({ src, alt, fallbackText }: { src: string, alt: string, fallbackText: string }) => {
@@ -266,6 +268,8 @@ function App() {
             }
           />
           <Route path="/books/:bookId" element={<BookDetail />} />
+          <Route path="/impressum" element={<Impressum />} />
+          <Route path="/datenschutz" element={<Datenschutz />} />
         </Routes>
       </main>
 
@@ -289,6 +293,19 @@ function App() {
             <li>Wer nicht warten möchte: Klicke beim gewünschten Buch auf den <strong>E‑Mail</strong>-Button. Es wird automatisch eine E‑Mail mit den Buchdetails vorformuliert, die du nach Bedarf <strong>anpassen und senden</strong> kannst.</li>
           </ol>
         </section>
+        
+        {/* Legal Links */}
+        <div className="max-w-4xl mx-auto px-4 py-6 border-t border-yellow-600 mt-8">
+          <div className="flex flex-wrap gap-4 justify-center text-sm">
+            <a href="/impressum" className="text-black hover:text-yellow-800 font-medium">
+              Impressum
+            </a>
+            <span className="text-yellow-700">•</span>
+            <a href="/datenschutz" className="text-black hover:text-yellow-800 font-medium">
+              Datenschutzerklärung
+            </a>
+          </div>
+        </div>
       </footer>
       
       <Toaster 
