@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -203,6 +203,10 @@ export type Database = {
           new_votes: number
         }[]
       }
+      get_book_vote_count: {
+        Args: { book_id_param: string }
+        Returns: number
+      }
       get_voting_data: {
         Args: { book_id_param: string }
         Returns: {
@@ -216,15 +220,15 @@ export type Database = {
         Args: { book_id_param: string }
         Returns: {
           book_votes: number
-          user_vote_count: number
-          user_remaining_points: number
           user_is_suggester: boolean
+          user_remaining_points: number
+          user_vote_count: number
         }[]
       }
       has_role: {
         Args: {
-          _user_id: string
           _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
         }
         Returns: boolean
       }
@@ -249,10 +253,10 @@ export type Database = {
       remove_vote: {
         Args: { book_id_param: string }
         Returns: {
-          success: boolean
+          error_message: string
           new_vote_count: number
           remaining_points: number
-          error_message: string
+          success: boolean
         }[]
       }
       reset_all_user_points: {
