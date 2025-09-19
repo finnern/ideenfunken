@@ -7,8 +7,8 @@
   line-height: 1.5;
   font-weight: 400;
   
-  /* Library availability indicator */
-  --library-available: 45, 93%, 54%; /* Yellow for books available in library */
+  /* Library availability indicator - proper format for hsl() function */
+  --library-available: 45 93% 54%;
 }
 
 html {
