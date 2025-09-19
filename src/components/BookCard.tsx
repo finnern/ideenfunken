@@ -40,6 +40,8 @@ export default function BookCard({ book }: BookCardProps) {
     return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
+  console.log('BookCard rendering:', book.title, 'available_in_mediathek:', book.available_in_mediathek)
+  
   return (
     <div className={`bg-white rounded-lg shadow-md overflow-hidden border hover:shadow-lg transition-shadow ${
       book.available_in_mediathek 

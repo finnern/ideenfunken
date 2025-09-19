@@ -62,6 +62,8 @@ export function useBooks() {
         suggester_name: book.suggester_name || profilesMap.get(book.suggested_by) || null
       }))
 
+      
+      console.log('📚 Sample book data with available_in_mediathek:', booksWithNames.find(b => b.title?.includes('Kleine Prinz')))
       setBooks(booksWithNames)
     } catch (err) {
       console.error('Error fetching books:', err)
