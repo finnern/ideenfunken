@@ -15,6 +15,7 @@ export interface Book {
   is_anonymous?: boolean
   more_info_url?: string | null
   url_good_reads?: string | null
+  available_in_mediathek?: boolean | null
 }
 
 export interface BookVote {

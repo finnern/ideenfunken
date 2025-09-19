@@ -9,6 +9,7 @@ export default {
       colors: {
         primary: '#2563eb',
         secondary: '#64748b',
+        'library-available': 'hsl(var(--library-available))',
       }
     },
   },
