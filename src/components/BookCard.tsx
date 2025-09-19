@@ -43,10 +43,10 @@ export default function BookCard({ book }: BookCardProps) {
   console.log('🐛 BookCard Debug:', book.title, 'available_in_mediathek:', book.available_in_mediathek, 'border class:', book.available_in_mediathek ? 'border-library-available border-2' : 'border-gray-200')
   
   return (
-    <div className={`bg-white rounded-lg shadow-md overflow-hidden border hover:shadow-lg transition-shadow ${
+    <div className={`bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow ${
       book.available_in_mediathek 
-        ? 'border-library-available border-2' 
-        : 'border-gray-200'
+        ? 'border-2 border-yellow-400' 
+        : 'border border-gray-200'
     }`}>
       <Link to={`/books/${book.id}`} className="block">
         <div className="aspect-[2/3] w-full">
