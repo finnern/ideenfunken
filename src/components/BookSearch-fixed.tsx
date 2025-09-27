@@ -135,8 +135,8 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
       return
     }
 
-    if (userBookCount >= 5) {
-      toast.error('Du hast bereits 5 Bücher vorgeschlagen (Maximalgrenze)')
+    if (userBookCount >= 10) {
+      toast.error('Du hast bereits 10 Bücher vorgeschlagen (Maximalgrenze)')
       return
     }
     
@@ -195,7 +195,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
     }
   }
 
-  if (userBookCount >= 5) {
+  if (userBookCount >= 10) {
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
         <BookOpen className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
@@ -203,7 +203,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
           Maximale Anzahl erreicht
         </h3>
         <p className="text-yellow-700">
-          Du hast bereits 5 Bücher vorgeschlagen (Maximalgrenze). Du kannst weiterhin für vorhandene Bücher abstimmen!
+          Du hast bereits 10 Bücher vorgeschlagen (Maximalgrenze). Du kannst weiterhin für vorhandene Bücher abstimmen!
         </p>
       </div>
     )
@@ -218,7 +218,7 @@ export default function BookSearchFixed({ user, onBookAdded }: BookSearchProps) 
       
       <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
         <p className="text-blue-800 text-sm mb-2">
-          📚 Suche nach inspirierenden Büchern für unsere Sammlung. Du kannst bis zu 5 Bücher vorschlagen. ({userBookCount}/5 genutzt)
+          📚 Suche nach inspirierenden Büchern für unsere Sammlung. Du kannst bis zu 10 Bücher vorschlagen. ({userBookCount}/10 genutzt)
         </p>
         <p className="text-blue-700 text-sm font-medium">
           💡 Inspirations‑Zitat ist Pflicht – erkläre, warum dieses Buch unsere Community inspiriert!
