@@ -21,8 +21,9 @@ export default function BookDetail() {
           setLoading(false)
           return
         }
+        // Use secure public view that masks anonymous user data
         const { data, error } = await supabase
-          .from('books')
+          .from('books_public')
           .select('*')
           .eq('id', bookId)
           .maybeSingle()

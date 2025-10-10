@@ -12,9 +12,9 @@ export function useBooks() {
       setLoading(true)
       setError(null)
 
-      // Query 1: Get all books (simple, reliable)
+      // Query 1: Get all books from secure public view (masks anonymous user data)
       const { data: books, error: booksError } = await supabase
-        .from('books')
+        .from('books_public')
         .select('*')
 
       console.log('📚 Books query result:', { books: books?.length || 0, error: booksError })
