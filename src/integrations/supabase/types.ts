@@ -68,6 +68,13 @@ export type Database = {
             referencedRelation: "books"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "book_votes_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       books: {
@@ -186,7 +193,66 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      books_public: {
+        Row: {
+          author: string | null
+          available_in_mediathek: boolean | null
+          cover_url: string | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          inspiration_quote: string | null
+          is_anonymous: boolean | null
+          isbn: string | null
+          more_info_url: string | null
+          original_cover_url: string | null
+          suggested_by: string | null
+          suggester_name: string | null
+          title: string | null
+          updated_at: string | null
+          url_good_reads: string | null
+          votes: number | null
+        }
+        Insert: {
+          author?: string | null
+          available_in_mediathek?: boolean | null
+          cover_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          inspiration_quote?: never
+          is_anonymous?: boolean | null
+          isbn?: string | null
+          more_info_url?: string | null
+          original_cover_url?: string | null
+          suggested_by?: never
+          suggester_name?: never
+          title?: string | null
+          updated_at?: string | null
+          url_good_reads?: string | null
+          votes?: number | null
+        }
+        Update: {
+          author?: string | null
+          available_in_mediathek?: boolean | null
+          cover_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          inspiration_quote?: never
+          is_anonymous?: boolean | null
+          isbn?: string | null
+          more_info_url?: string | null
+          original_cover_url?: string | null
+          suggested_by?: never
+          suggester_name?: never
+          title?: string | null
+          updated_at?: string | null
+          url_good_reads?: string | null
+          votes?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_vote: {
