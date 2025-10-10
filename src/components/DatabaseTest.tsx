@@ -13,9 +13,9 @@ export default function DatabaseTest() {
         setLoading(true)
         setError(null)
 
-        // Test basic connection by counting books
+        // Test basic connection by counting books from public view
         const { count, error } = await supabase
-          .from('books')
+          .from('books_public')
           .select('*', { count: 'exact', head: true })
 
         if (error) throw error

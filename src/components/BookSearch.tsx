@@ -24,6 +24,7 @@ export default function BookSearch({ user, onBookAdded }: BookSearchProps) {
       if (!user) return
 
       try {
+        // Use the books table directly for counting user's own suggestions (user is authenticated)
         const { count } = await supabase
           .from('books')
           .select('*', { count: 'exact', head: true })
@@ -84,9 +85,9 @@ export default function BookSearch({ user, onBookAdded }: BookSearchProps) {
       
       const isbn = extractIsbn(book)
       
-      // Check if book already exists
+      // Check if book already exists using public view (doesn't expose user data)
       const { data: existingBooks } = await supabase
-        .from('books')
+        .from('books_public')
         .select('id, title')
         .eq('isbn', isbn)
         
