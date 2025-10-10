@@ -131,9 +131,9 @@ export default function BookDetail() {
         <p className="text-gray-700">von {book.author}</p>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <div className="md:col-span-1">
-          <div className="aspect-[2/3] w-full">
+          <div className="aspect-[2/3] w-full max-w-sm mx-auto">
             <BookCover
               coverUrl={book.cover_url || book.original_cover_url}
               title={book.title}
@@ -142,7 +142,7 @@ export default function BookDetail() {
             />
           </div>
         </div>
-        <div className="md:col-span-2">
+        <div className="md:col-span-1">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-sm text-gray-600">{voteCount} Stimmen</span>
             <SimplifiedVoteButton
@@ -153,11 +153,24 @@ export default function BookDetail() {
           </div>
 
           {book.isbn && (
-            <p className="text-sm text-gray-600 mb-2">ISBN: {book.isbn}</p>
+            <p className="text-sm text-gray-600 mb-4">ISBN: {book.isbn}</p>
+          )}
+
+          {book.inspiration_quote && (
+            <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-l-4 border-yellow-400 p-6 mb-6 rounded-r-lg shadow-sm">
+              <p className="text-lg font-medium text-gray-800 mb-2">💡 Inspirations-Zitat</p>
+              <p className="text-gray-700 italic leading-relaxed">&quot;{book.inspiration_quote}&quot;</p>
+              {book.suggester_name && !book.is_anonymous && (
+                <p className="text-sm text-gray-600 mt-3">— {book.suggester_name}</p>
+              )}
+            </div>
           )}
 
           {book.description && (
-            <p className="text-gray-800 mb-4 whitespace-pre-line">{book.description}</p>
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold mb-2">Beschreibung</h2>
+              <p className="text-gray-800 whitespace-pre-line leading-relaxed">{book.description}</p>
+            </div>
           )}
 
           <div className="flex flex-wrap items-center gap-2">
