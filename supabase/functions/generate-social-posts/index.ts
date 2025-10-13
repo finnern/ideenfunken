@@ -46,60 +46,80 @@ serve(async (req) => {
 
     console.log('Found book:', book.title);
 
-    // Prepare prompt for AI
-    const prompt = `Generate social media posts for the following book recommendation:
+    const bookUrl = `https://ideenfunken.lovable.app/?isbn=${isbn}`;
 
-Book Title: ${book.title}
-Author: ${book.author}
-${book.description ? `Description: ${book.description}` : ''}
-${book.inspiration_quote ? `Recommendation from poster: "${book.inspiration_quote}"` : ''}
-${book.suggester_name ? `Suggested by: ${book.suggester_name}` : ''}
+    // Prepare prompt for AI (in German)
+    const prompt = `Du bist Social Media Manager für die Ideenfunken-Initiative in Schramberg - eine Community-Plattform für Buchempfehlungen.
 
-Additional context from editor: ${userInput || 'None provided'}
+BUCH-INFOS:
+Titel: ${book.title}
+Autor: ${book.author}
+Empfehlung vom User: "${book.inspiration_quote || 'Keine Empfehlung vorhanden'}"
+${userInput ? `Mark's Kommentar: "${userInput}"` : ''}
 
-Please generate 3 engaging social media posts optimized for:
-1. Facebook (conversational, can be longer, up to 400 characters)
-2. LinkedIn (professional tone, focus on insights and learning, up to 300 characters)
-3. Instagram (casual, engaging, use emojis, up to 250 characters, suggest 3-5 relevant hashtags)
+AUFGABE:
+Erstelle 3 Social Media Posts (Facebook, LinkedIn, Instagram) nach EXAKT diesem Template:
 
-Format your response as JSON with this structure:
+---TEMPLATE START---
+Interessanter Buchvorschlag in Ideenfunken:
+${bookUrl}
+
+📖 ${book.title} - ${book.author}
+
+${book.inspiration_quote}
+
+${userInput ? userInput : '[Hier könnte dein Kommentar stehen]'}
+
+💡 Teile auch du dein Lieblingsbuch auf Ideenfunken und vote für andere Vorschläge! Die Top 10 gehen direkt an die Mediathek Schramberg.
+https://ideenfunken.lovable.app/
+
+#Schramberg #Buchempfehlungen #Community #Lesen
+---TEMPLATE END---
+
+WICHTIG:
+- Verwende IMMER den Link ${bookUrl} am Anfang
+- Verwende IMMER die User-Empfehlung im Original
+- Füge Mark's Kommentar hinzu wenn vorhanden, sonst lass den Teil weg
+- Am Ende IMMER: Call-to-Action + ideenfunken.lovable.app Link + Hashtags
+
+PLATTFORM-ANPASSUNGEN:
+- Facebook: Wie Template, etwas persönlicher/emotionaler Ton
+- LinkedIn: Wie Template, aber professioneller Ton, betone Qualität/Innovation
+- Instagram: Wie Template, aber kürzer, mehr Emojis, zusätzliche Hashtags
+
+Antworte NUR mit einem JSON-Objekt in diesem exakten Format:
 {
-  "facebook": "post text",
-  "linkedin": "post text",
-  "instagram": {
-    "text": "post text",
-    "hashtags": ["hashtag1", "hashtag2", "hashtag3"]
-  }
+  "facebook": "kompletter Post Text",
+  "linkedin": "kompletter Post Text",
+  "instagram": "kompletter Post Text"
 }`;
 
-    // Call Lovable AI
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+    // Call Anthropic Claude API
+    const ANTHROPIC_API_KEY = Deno.env.get('ANTHROPIC_API_KEY');
+    if (!ANTHROPIC_API_KEY) {
+      throw new Error('ANTHROPIC_API_KEY not configured');
     }
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const aiResponse = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash', // Free during promotion period
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are a social media marketing expert. Generate engaging, authentic posts that capture the essence of book recommendations. Always return valid JSON only, no additional text.'
-          },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-      }),
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        messages: [{
+          role: 'user',
+          content: prompt
+        }]
+      })
     });
 
     if (!aiResponse.ok) {
       const errorText = await aiResponse.text();
-      console.error('AI API error:', aiResponse.status, errorText);
+      console.error('Anthropic API error:', aiResponse.status, errorText);
       
       if (aiResponse.status === 429) {
         return new Response(
@@ -108,26 +128,24 @@ Format your response as JSON with this structure:
         );
       }
       
-      throw new Error(`AI API error: ${aiResponse.status}`);
+      throw new Error(`Anthropic API error: ${aiResponse.status}`);
     }
 
     const aiData = await aiResponse.json();
-    const generatedContent = aiData.choices[0].message.content;
+    let postsText = aiData.content[0].text;
 
     // Parse the AI response
     let socialPosts;
     try {
-      // Extract JSON from potential markdown code blocks
-      const jsonMatch = generatedContent.match(/```json\n?(.*?)\n?```/s) || 
-                       generatedContent.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : generatedContent;
-      socialPosts = JSON.parse(jsonStr.trim());
+      // Strip markdown code blocks if present
+      postsText = postsText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      socialPosts = JSON.parse(postsText);
     } catch (parseError) {
-      console.error('Failed to parse AI response:', generatedContent);
+      console.error('Failed to parse AI response:', postsText);
       socialPosts = {
-        facebook: generatedContent,
-        linkedin: generatedContent,
-        instagram: { text: generatedContent, hashtags: [] }
+        facebook: postsText,
+        linkedin: postsText,
+        instagram: postsText
       };
     }
 
