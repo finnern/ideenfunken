@@ -1,1 +1,4 @@
 project_id = "tdrrwgarryjjyoviktgf"
+
+[functions.generate-social-posts]
+verify_jwt = false
