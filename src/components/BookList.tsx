@@ -1,9 +1,14 @@
 import { useBooks } from '../hooks/useBooks'
 import BookCard from './BookCard'
 import { Loader2 } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 export default function BookList() {
   const { books, loading, error } = useBooks()
+  const [searchParams] = useSearchParams()
+  const isbn = searchParams.get('isbn')
+  const bookRefs = useRef<{ [key: string]: HTMLDivElement | null }>({})
 
   if (loading) {
     return (
@@ -37,10 +42,31 @@ export default function BookList() {
     )
   }
 
+  // Scroll to book with ISBN when available
+  useEffect(() => {
+    if (isbn && books.length > 0) {
+      const book = books.find(b => b.isbn === isbn)
+      if (book && bookRefs.current[book.id]) {
+        setTimeout(() => {
+          bookRefs.current[book.id]?.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          })
+        }, 100)
+      }
+    }
+  }, [isbn, books])
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {books.map((book) => (
-        <BookCard key={book.id} book={book} />
+        <div 
+          key={book.id}
+          ref={el => { bookRefs.current[book.id] = el }}
+          className={isbn === book.isbn ? 'ring-2 ring-primary rounded-lg' : ''}
+        >
+          <BookCard book={book} />
+        </div>
       ))}
     </div>
   )
