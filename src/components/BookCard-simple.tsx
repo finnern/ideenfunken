@@ -137,7 +137,7 @@ export default function BookCard({ book, user, userVoteCount, onVoteChange, isEx
   }
 
   const generateEmailLink = () => {
-    const subject = `Buchbestellung über Ideenschmiede App: ${book.title} by ${book.author}`
+    const subject = `Buchbestellung über Ideenfunken: ${book.title} by ${book.author}`
     const body = `Liebe Buchlese Schramberg,
 
 Ich möchte gerne folgendes Buch bestellen:
