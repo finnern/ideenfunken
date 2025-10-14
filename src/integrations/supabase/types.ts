@@ -220,7 +220,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string | null
-          inspiration_quote?: never
+          inspiration_quote?: string | null
           is_anonymous?: boolean | null
           isbn?: string | null
           more_info_url?: string | null
@@ -239,7 +239,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string | null
-          inspiration_quote?: never
+          inspiration_quote?: string | null
           is_anonymous?: boolean | null
           isbn?: string | null
           more_info_url?: string | null
@@ -257,7 +257,12 @@ export type Database = {
     Functions: {
       add_vote: {
         Args: { book_id: string; user_id: string } | { book_id_param: string }
-        Returns: Json
+        Returns: {
+          error_message: string
+          new_vote_count: number
+          remaining_points: number
+          success: boolean
+        }[]
       }
       admin_reset_all_votes: {
         Args: Record<PropertyKey, never>
