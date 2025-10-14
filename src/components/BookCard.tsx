@@ -63,7 +63,16 @@ export default function BookCard({ book }: BookCardProps) {
         <h3 className="font-semibold text-lg mb-1 line-clamp-2">{book.title}</h3>
         <p className="text-gray-600 mb-2">{book.author}</p>
         
-        {book.description && (
+        {book.inspiration_quote && (
+          <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-l-4 border-yellow-400 p-3 mb-3 rounded-r-lg">
+            <p className="text-xs font-medium text-gray-700 mb-1">
+              Empfohlen von: {book.suggester_name || 'Anonym'}
+            </p>
+            <p className="text-sm text-gray-700 italic line-clamp-3">&quot;{book.inspiration_quote}&quot;</p>
+          </div>
+        )}
+
+        {book.description && !book.inspiration_quote && (
           <p className="text-sm text-gray-700 mb-3 line-clamp-3">{book.description}</p>
         )}
 
