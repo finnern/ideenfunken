@@ -65,8 +65,8 @@ export default function BookCard({ book }: BookCardProps) {
         
         {book.inspiration_quote && (
           <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border-l-4 border-yellow-400 p-3 mb-3 rounded-r-lg">
-            <p className="text-xs font-medium text-gray-700 mb-1">
-              Empfohlen von: {book.suggester_name || 'Anonym'}
+            <p className="text-sm font-medium text-gray-800 mb-1">
+              Empfohlen von: {book.is_anonymous || !book.suggester_name?.trim() ? 'Anonym' : book.suggester_name}
             </p>
             <p className="text-sm text-gray-700 italic line-clamp-3">&quot;{book.inspiration_quote}&quot;</p>
           </div>
