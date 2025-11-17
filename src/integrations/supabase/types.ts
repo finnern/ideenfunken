@@ -255,29 +255,25 @@ export type Database = {
       }
     }
     Functions: {
-      add_vote: {
-        Args: { book_id: string; user_id: string } | { book_id_param: string }
-        Returns: {
-          error_message: string
-          new_vote_count: number
-          remaining_points: number
-          success: boolean
-        }[]
-      }
-      admin_reset_all_votes: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      add_vote:
+        | {
+            Args: { book_id_param: string }
+            Returns: {
+              error_message: string
+              new_vote_count: number
+              remaining_points: number
+              success: boolean
+            }[]
+          }
+        | { Args: { book_id: string; user_id: string }; Returns: Json }
+      admin_reset_all_votes: { Args: never; Returns: undefined }
       decrement_vote: {
         Args: { book_id: string }
         Returns: {
           new_votes: number
         }[]
       }
-      get_book_vote_count: {
-        Args: { book_id_param: string }
-        Returns: number
-      }
+      get_book_vote_count: { Args: { book_id_param: string }; Returns: number }
       get_voting_data: {
         Args: { book_id_param: string }
         Returns: {
@@ -309,14 +305,8 @@ export type Database = {
           new_votes: number
         }[]
       }
-      is_current_user_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      recalculate_all_book_votes: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      is_current_user_admin: { Args: never; Returns: boolean }
+      recalculate_all_book_votes: { Args: never; Returns: undefined }
       recalculate_book_votes: {
         Args: { book_id_param: string }
         Returns: number
@@ -334,14 +324,8 @@ export type Database = {
         Args: { default_points?: number }
         Returns: undefined
       }
-      secure_add_vote: {
-        Args: { book_id_param: string }
-        Returns: boolean
-      }
-      secure_remove_vote: {
-        Args: { book_id_param: string }
-        Returns: boolean
-      }
+      secure_add_vote: { Args: { book_id_param: string }; Returns: boolean }
+      secure_remove_vote: { Args: { book_id_param: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
