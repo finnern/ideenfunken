@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.book-og-meta]
 verify_jwt = false
+
+[functions.generate-book-banderole]
+verify_jwt = false

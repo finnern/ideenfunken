@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import BookCover from './BookCover'
 import { supabase } from '../lib/supabase'
-import { Heart, Loader2, ChevronDown, ChevronUp, Mail, Share2 } from 'lucide-react'
+import { Heart, Loader2, ChevronDown, ChevronUp, Mail, Share2, Printer } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface BookCardProps {
@@ -124,11 +124,12 @@ export default function BookCard({ book, user, userVoteCount, onVoteChange, isEx
   }
 
   const handleCardClick = (e: React.MouseEvent) => {
-    // Don't expand if clicking on vote, email or share buttons
+    // Don't expand if clicking on vote, email, banderole or share buttons
     const target = e.target as HTMLElement
     if (
       target.closest('button[data-vote-button]') ||
       target.closest('a[data-email-button]') ||
+      target.closest('a[href*="generate-book-banderole"]') ||
       target.closest('button[data-share-button]')
     ) {
       return
@@ -137,14 +138,25 @@ export default function BookCard({ book, user, userVoteCount, onVoteChange, isEx
   }
 
   const generateEmailLink = () => {
-    const subject = `Buchbestellung über Ideenfunken: ${book.title} by ${book.author}`
-    const body = `Liebe Buchlese Schramberg,
+    const subject = `Buchspende für Bücherschrank Rathausplatz über Ideenfunken`
+    const banderoleUrl = `https://tdrrwgarryjjyoviktgf.supabase.co/functions/v1/generate-book-banderole?bookId=${book.id}`
+    const body = `Liebes Buchlese Team,
 
-Ich möchte gerne folgendes Buch bestellen:
+im Rahmen unserer Bücherschrank-Initiative möchte ich gerne folgendes Buch bestellen:
+
 Titel: ${book.title}
-Autor: ${book.author}${book.isbn ? `\nISBN: ${book.isbn}` : ''}
+Autor: ${book.author || 'Unbekannt'}${book.isbn ? `\nISBN: ${book.isbn}` : ''}
 
-Vielen Dank und beste Grüße`
+Das Buch soll mit einer Ideenfunken-Banderole versehen und im Bücherschrank am Rathausplatz ausgelegt werden.
+
+Die Banderole zum Ausdrucken finden Sie hier:
+${banderoleUrl}
+
+Konzept: Leser können den QR-Code auf der Banderole scannen, um mehr über das Buch auf Ideenfunken zu erfahren. Nach dem Lesen bringen sie das Buch zurück und teilen ihre Erkenntnisse.
+
+Vielen Dank für Ihre Unterstützung dieser Community-Initiative!
+
+Beste Grüße`
 
     return `mailto:schramberg@buchlese.net?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
@@ -266,6 +278,19 @@ Vielen Dank und beste Grüße`
             >
               <Mail className="w-3 h-3" />
               <span>Email</span>
+            </a>
+
+            {/* Banderole Button */}
+            <a
+              href={`https://tdrrwgarryjjyoviktgf.supabase.co/functions/v1/generate-book-banderole?bookId=${book.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-2 py-1 rounded text-xs bg-yellow-400 text-black hover:bg-yellow-500 transition-colors"
+              title="Banderole drucken"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Printer className="w-3 h-3" />
+              <span>Banderole</span>
             </a>
 
             {/* Share Button (only when expanded) */}
