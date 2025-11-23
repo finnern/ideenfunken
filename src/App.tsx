@@ -160,7 +160,8 @@ function App() {
       <div className="bg-gray-50 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4 text-center">
           <p className="text-gray-700 text-base md:text-lg font-medium">
-            Eine Einladung an Schramberg und Umgebung: Teilt innovative Bücher, die euer Leben verbessert haben!
+            Das Abstimmen ist abgeschlossen – die ausgewählten Bücher werden am <strong>15. Dezember</strong> in der Mediathek übergeben (genaue Uhrzeit folgt).
+            Du kannst weiterhin Bücher vorschlagen, sie werden jedoch nicht mehr für die Mediathek berücksichtigt.
           </p>
         </div>
       </div>
