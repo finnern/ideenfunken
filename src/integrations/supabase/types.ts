@@ -256,6 +256,7 @@ export type Database = {
     }
     Functions: {
       add_vote:
+        | { Args: { book_id: string; user_id: string }; Returns: Json }
         | {
             Args: { book_id_param: string }
             Returns: {
@@ -265,7 +266,6 @@ export type Database = {
               success: boolean
             }[]
           }
-        | { Args: { book_id: string; user_id: string }; Returns: Json }
       admin_reset_all_votes: { Args: never; Returns: undefined }
       decrement_vote: {
         Args: { book_id: string }
